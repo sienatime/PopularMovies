@@ -1,3 +1,4 @@
 <resources>
   <string name="app_name">Popular Movies</string>
+  <string name="error">Something went wrong: %s</string>
 </resources>
