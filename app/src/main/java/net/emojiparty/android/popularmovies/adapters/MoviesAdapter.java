@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.squareup.picasso.Picasso;
 import java.util.List;
 import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.models.Movie;
@@ -29,6 +30,11 @@ public class MoviesAdapter extends RecyclerView.Adapter {
     Movie movie = movies.get(position);
     MovieViewHolder movieViewHolder = (MovieViewHolder) holder;
     movieViewHolder.movieTitle.setText(movie.getTitle());
+    Picasso.get()
+        .load(movie.getPosterPath())
+        .placeholder(R.color.colorPrimaryDark)
+        .error(R.color.colorAccent)
+        .into(movieViewHolder.moviePoster);
   }
 
   @Override public int getItemCount() {
@@ -36,8 +42,8 @@ public class MoviesAdapter extends RecyclerView.Adapter {
   }
 
   static class MovieViewHolder extends RecyclerView.ViewHolder {
-    public TextView movieTitle;
-    public ImageView moviePoster;
+    TextView movieTitle;
+    ImageView moviePoster;
 
     MovieViewHolder(View view) {
       super(view);

@@ -4,7 +4,7 @@ android {
   compileSdkVersion 27
   defaultConfig {
     applicationId "net.emojiparty.android.popularmovies"
-    minSdkVersion 15
+    minSdkVersion 21
     targetSdkVersion 27
     versionCode 1
     versionName "1.0"
@@ -35,4 +35,5 @@ dependencies {
   implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
   implementation 'com.google.code.gson:gson:2.8.3'
   implementation 'com.android.support:recyclerview-v7:27.1.1'
+  implementation 'com.squareup.picasso:picasso:2.71828'
 }
