@@ -1,15 +1,14 @@
 package net.emojiparty.android.popularmovies.adapters;
 
+import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import com.squareup.picasso.Picasso;
 import java.util.List;
 import net.emojiparty.android.popularmovies.R;
+import net.emojiparty.android.popularmovies.BR;
+import net.emojiparty.android.popularmovies.databinding.ListItemMovieBinding;
 import net.emojiparty.android.popularmovies.models.Movie;
 
 public class MoviesAdapter extends RecyclerView.Adapter {
@@ -21,34 +20,33 @@ public class MoviesAdapter extends RecyclerView.Adapter {
 
   @NonNull @Override
   public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-    View view =
-        LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_movie, parent, false);
-    return new MovieViewHolder(view);
+    LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+    ListItemMovieBinding binding =
+        DataBindingUtil.inflate(layoutInflater, R.layout.list_item_movie, parent, false);
+    return new MovieViewHolder(binding);
   }
 
   @Override public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-    Movie movie = movies.get(position);
     MovieViewHolder movieViewHolder = (MovieViewHolder) holder;
-    movieViewHolder.movieTitle.setText(movie.getTitle());
-    Picasso.get()
-        .load(movie.getPosterPath())
-        .placeholder(R.color.colorPrimaryDark)
-        .error(R.color.colorAccent)
-        .into(movieViewHolder.moviePoster);
+    movieViewHolder.bind(movies.get(position));
   }
 
   @Override public int getItemCount() {
     return movies.size();
   }
 
+  // https://medium.com/google-developers/android-data-binding-recyclerview-db7c40d9f0e4
   static class MovieViewHolder extends RecyclerView.ViewHolder {
-    TextView movieTitle;
-    ImageView moviePoster;
+    ListItemMovieBinding binding;
 
-    MovieViewHolder(View view) {
-      super(view);
-      movieTitle = view.findViewById(R.id.list_item_movie_title);
-      moviePoster = view.findViewById(R.id.list_item_movie_poster);
+    MovieViewHolder(ListItemMovieBinding binding) {
+      super(binding.getRoot());
+      this.binding = binding;
+    }
+
+    void bind(Movie movie) {
+      binding.setVariable(BR.movie, movie);
+      binding.executePendingBindings();
     }
   }
 }

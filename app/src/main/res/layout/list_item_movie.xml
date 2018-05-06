@@ -1,26 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--https://stackoverflow.com/a/41740113/2475922-->
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    >
 
-  <ImageView
-      android:id="@+id/list_item_movie_poster"
-      style="@style/squareImage"
-      />
+  <data>
+    <variable
+        name="movie"
+        type="net.emojiparty.android.popularmovies.models.Movie"
+        />
+  </data>
 
-  <View
-      android:background="@color/black30p"
-      style="@style/squareImage"
-      />
+  <android.support.constraint.ConstraintLayout
+      xmlns:tools="http://schemas.android.com/tools"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      >
 
-  <TextView
-      android:id="@+id/list_item_movie_title"
-      style="@style/shadowText"
-      tools:text="Avengers"
-      />
 
-</android.support.constraint.ConstraintLayout>
+    <ImageView
+        android:id="@+id/list_item_movie_poster"
+        style="@style/squareImage"
+        app:imageUrl="@{movie.posterPath}"
+        />
+
+    <View
+        android:background="@color/black30p"
+        style="@style/squareImage"
+        />
+
+    <TextView
+        android:id="@+id/list_item_movie_title"
+        tools:text="Avengers"
+        android:text="@{movie.title}"
+        style="@style/shadowText"
+        />
+
+  </android.support.constraint.ConstraintLayout>
+
+</layout>

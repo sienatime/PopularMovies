@@ -21,6 +21,9 @@ android {
       it.buildConfigField 'String', 'THE_MOVIE_DB_API_KEY', "\"$System.env.THE_MOVIE_DB_API_KEY\""
     }
   }
+  dataBinding {
+    enabled = true
+  }
 }
 
 dependencies {
