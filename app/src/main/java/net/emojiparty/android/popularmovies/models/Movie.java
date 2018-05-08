@@ -1,6 +1,7 @@
 package net.emojiparty.android.popularmovies.models;
 
 import com.google.gson.annotations.SerializedName;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Movie {
@@ -57,4 +58,10 @@ public class Movie {
   public void setReleaseDate(Date releaseDate) {
     this.releaseDate = releaseDate;
   }
+
+  public String formattedReleaseDate() {
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMMM dd, yyyy");
+    return simpleDateFormat.format(this.releaseDate);
+  }
+
 }

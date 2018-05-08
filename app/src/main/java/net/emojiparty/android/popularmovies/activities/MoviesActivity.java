@@ -4,8 +4,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.Toast;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class MoviesActivity extends AppCompatActivity {
     });
   }
 
-  private void loadOneMovie() {
+  public static Movie offlineMovie() {
     Movie movie = new Movie();
     movie.setTitle("Avengers: Infinity War");
     movie.setPosterPath("/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg");
@@ -80,7 +80,16 @@ public class MoviesActivity extends AppCompatActivity {
       movie.setReleaseDate(new Date());
     }
     movie.setVoteAverage(8.7f);
-    movies.add(movie);
+    return movie;
+  }
+
+  private void loadOneMovie() {
+    Movie offlineMovie = offlineMovie();
+    movies.add(offlineMovie);
     moviesAdapter.notifyDataSetChanged();
+  }
+
+  private void openDetailMovie() {
+    Log.i("MOVIES_ACTIVITY", "I made it!");
   }
 }

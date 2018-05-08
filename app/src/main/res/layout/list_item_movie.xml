@@ -17,7 +17,6 @@
       android:layout_height="wrap_content"
       >
 
-
     <ImageView
         android:id="@+id/list_item_movie_poster"
         style="@style/squareImage"
