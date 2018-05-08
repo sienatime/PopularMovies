@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,13 +27,36 @@ public class MoviesActivity extends AppCompatActivity {
   private final List<Movie> movies = new ArrayList<>();
   private MoviesAdapter moviesAdapter;
   private final int GRID_COLUMN_COUNT = 2;
+  private boolean isSortedByPopular = true;
+  private boolean requestInProgress = false;
+  private TheMovieDb theMovieDb;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    theMovieDb = new TheMovieDb();
     setContentView(R.layout.activity_movies);
     instantiateRecyclerView();
-    //loadPopularMovies();
-    loadOneMovie();
+    loadPopularMovies();
+    //loadOneMovie();
+  }
+
+  @Override public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.menu, menu);
+    return true;
+  }
+
+  @Override public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == R.id.toggle_sort && !requestInProgress) {
+      if (isSortedByPopular) {
+        isSortedByPopular = false;
+        loadTopRatedMovies();
+      } else {
+        isSortedByPopular = true;
+        loadPopularMovies();
+      }
+      return true;
+    }
+    return super.onOptionsItemSelected(item);
   }
 
   private void instantiateRecyclerView() {
@@ -48,13 +73,14 @@ public class MoviesActivity extends AppCompatActivity {
   }
 
   // https://futurestud.io/tutorials/retrofit-synchronous-and-asynchronous-requests
-  private void loadPopularMovies() {
-    TheMovieDb theMovieDb = new TheMovieDb();
-    theMovieDb.loadPopularMovies().enqueue(new Callback<TheMovieDbResponse>() {
+  private Callback<TheMovieDbResponse> onMoviesLoaded() {
+    return new Callback<TheMovieDbResponse>() {
       @Override
       public void onResponse(Call<TheMovieDbResponse> call, Response<TheMovieDbResponse> response) {
+        requestInProgress = false;
         if (response.isSuccessful()) {
           List<Movie> results = response.body().getResults();
+          movies.clear();
           movies.addAll(results);
           moviesAdapter.notifyDataSetChanged();
         } else {
@@ -63,9 +89,22 @@ public class MoviesActivity extends AppCompatActivity {
       }
 
       @Override public void onFailure(Call<TheMovieDbResponse> call, Throwable t) {
+        requestInProgress = false;
         showError(t.toString());
       }
-    });
+    };
+  }
+
+  private void loadTopRatedMovies() {
+    requestInProgress = true;
+    Toast.makeText(this, "loading top rated movies", Toast.LENGTH_SHORT).show();
+    //theMovieDb.loadTopRatedMovies().enqueue(onMoviesLoaded());
+  }
+
+  private void loadPopularMovies() {
+    requestInProgress = true;
+    Toast.makeText(this, "loading popular movies", Toast.LENGTH_SHORT).show();
+    //theMovieDb.loadPopularMovies().enqueue(onMoviesLoaded());
   }
 
   public static Movie offlineMovie() {
