@@ -7,11 +7,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.adapters.MoviesAdapter;
@@ -26,18 +25,20 @@ public class MoviesActivity extends AppCompatActivity {
 
   private final List<Movie> movies = new ArrayList<>();
   private MoviesAdapter moviesAdapter;
-  private final int GRID_COLUMN_COUNT = 2;
+  private final int GRID_COLUMN_COUNT = 2; // TODO: do some math for landscape mode
   private boolean isSortedByPopular = true;
   private boolean requestInProgress = false;
   private TheMovieDb theMovieDb;
+  private ProgressBar loadingIndicator;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     theMovieDb = new TheMovieDb();
     setContentView(R.layout.activity_movies);
+    loadingIndicator = findViewById(R.id.movies_loading);
     instantiateRecyclerView();
-    loadPopularMovies();
-    //loadOneMovie();
+    //loadPopularMovies();
+    loadOneMovie();
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {
@@ -77,7 +78,7 @@ public class MoviesActivity extends AppCompatActivity {
     return new Callback<TheMovieDbResponse>() {
       @Override
       public void onResponse(Call<TheMovieDbResponse> call, Response<TheMovieDbResponse> response) {
-        requestInProgress = false;
+        stopLoading();
         if (response.isSuccessful()) {
           List<Movie> results = response.body().getResults();
           movies.clear();
@@ -89,45 +90,43 @@ public class MoviesActivity extends AppCompatActivity {
       }
 
       @Override public void onFailure(Call<TheMovieDbResponse> call, Throwable t) {
-        requestInProgress = false;
+        stopLoading();
         showError(t.toString());
       }
     };
   }
 
-  private void loadTopRatedMovies() {
+  private void startLoading() {
     requestInProgress = true;
+    loadingIndicator.setVisibility(View.VISIBLE);
+  }
+
+  private void stopLoading() {
+    requestInProgress = false;
+    loadingIndicator.setVisibility(View.INVISIBLE);
+  }
+
+  private void loadTopRatedMovies() {
+    startLoading();
     Toast.makeText(this, "loading top rated movies", Toast.LENGTH_SHORT).show();
     //theMovieDb.loadTopRatedMovies().enqueue(onMoviesLoaded());
   }
 
   private void loadPopularMovies() {
-    requestInProgress = true;
+    startLoading();
     Toast.makeText(this, "loading popular movies", Toast.LENGTH_SHORT).show();
     //theMovieDb.loadPopularMovies().enqueue(onMoviesLoaded());
   }
 
-  public static Movie offlineMovie() {
-    Movie movie = new Movie();
-    movie.setTitle("Avengers: Infinity War");
-    movie.setPosterPath("/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg");
-    movie.setOverview("As the Avengers and their allies have continued to protect the world from threats too large for any one hero to handle, a new danger has emerged from the cosmic shadows: Thanos. A despot of intergalactic infamy, his goal is to collect all six Infinity Stones, artifacts of unimaginable power, and use them to inflict his twisted will on all of reality. Everything the Avengers have fought for has led up to this moment - the fate of Earth and existence itself has never been more uncertain.");
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd");
-    try {
-      movie.setReleaseDate(dateFormat.parse("2018-04-25"));
-    } catch (ParseException e) {
-      movie.setReleaseDate(new Date());
-    }
-    movie.setVoteAverage(8.7f);
-    return movie;
-  }
-
   private void loadOneMovie() {
-    Movie offlineMovie = offlineMovie();
+    startLoading();
+    Movie offlineMovie = Movie.offlineMovie();
+    stopLoading();
     movies.add(offlineMovie);
     moviesAdapter.notifyDataSetChanged();
   }
 
+  // TODO: use data binding to handle the click
   private void openDetailMovie() {
     Log.i("MOVIES_ACTIVITY", "I made it!");
   }

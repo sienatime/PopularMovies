@@ -58,6 +58,8 @@
           app:layout_constraintTop_toBottomOf="@+id/detail_movie_title"
           tools:text="Released April 25, 2018"
           />
+
+      <!-- TODO: format the float cuter -->
       <TextView
           android:id="@+id/detail_user_rating"
           android:layout_width="wrap_content"
