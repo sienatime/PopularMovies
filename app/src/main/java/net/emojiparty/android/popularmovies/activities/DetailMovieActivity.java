@@ -14,8 +14,8 @@ public class DetailMovieActivity extends AppCompatActivity {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     ActivityDetailMovieBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_detail_movie);
-    // TODO: use real movie
-    binding.setVariable(BR.movie, Movie.offlineMovie());
+    Movie movie = getIntent().getParcelableExtra(MOVIE_FOR_DETAIL);
+    binding.setVariable(BR.movie, movie);
   }
 
 //  TODO: back arrow in menu

@@ -1,11 +1,13 @@
 package net.emojiparty.android.popularmovies.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Movie {
+public class Movie implements Parcelable {
   private String title;
   private String overview;
 
@@ -19,6 +21,14 @@ public class Movie {
   private Date releaseDate;
 
   public Movie() { }
+
+  private Movie(Parcel parcel) {
+    this.title = parcel.readString();
+    this.overview = parcel.readString();
+    this.posterPath = parcel.readString();
+    this.voteAverage = parcel.readFloat();
+    this.releaseDate = new Date(parcel.readLong());
+  }
 
   public static Movie offlineMovie() {
     Movie movie = new Movie();
@@ -80,4 +90,26 @@ public class Movie {
     return simpleDateFormat.format(this.releaseDate);
   }
 
+  @Override public int describeContents() {
+    return 0;
+  }
+
+  @Override public void writeToParcel(Parcel parcel, int i) {
+    parcel.writeString(this.title);
+    parcel.writeString(this.overview);
+    parcel.writeString(this.posterPath);
+    parcel.writeFloat(this.voteAverage);
+    parcel.writeLong(this.releaseDate.getTime());
+  }
+
+  // https://guides.codepath.com/android/using-parcelable
+  public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+    @Override public Movie createFromParcel(Parcel parcel) {
+      return new Movie(parcel);
+    }
+
+    @Override public Movie[] newArray(int i) {
+      return new Movie[i];
+    }
+  };
 }

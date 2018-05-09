@@ -37,8 +37,8 @@ public class MoviesActivity extends AppCompatActivity {
     setContentView(R.layout.activity_movies);
     loadingIndicator = findViewById(R.id.movies_loading);
     instantiateRecyclerView();
-    //loadPopularMovies();
-    loadOneMovie();
+    loadPopularMovies();
+    //loadOneMovie();
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {
@@ -109,13 +109,13 @@ public class MoviesActivity extends AppCompatActivity {
   private void loadTopRatedMovies() {
     startLoading();
     Toast.makeText(this, "loading top rated movies", Toast.LENGTH_SHORT).show();
-    //theMovieDb.loadTopRatedMovies().enqueue(onMoviesLoaded());
+    theMovieDb.loadTopRatedMovies().enqueue(onMoviesLoaded());
   }
 
   private void loadPopularMovies() {
     startLoading();
     Toast.makeText(this, "loading popular movies", Toast.LENGTH_SHORT).show();
-    //theMovieDb.loadPopularMovies().enqueue(onMoviesLoaded());
+    theMovieDb.loadPopularMovies().enqueue(onMoviesLoaded());
   }
 
   private void loadOneMovie() {

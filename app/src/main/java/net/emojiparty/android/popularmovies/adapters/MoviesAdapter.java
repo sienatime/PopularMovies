@@ -63,6 +63,7 @@ public class MoviesAdapter extends RecyclerView.Adapter {
       binding.getRoot().setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View view) {
           Intent detailIntent = new Intent(context, DetailMovieActivity.class);
+          detailIntent.putExtra(DetailMovieActivity.MOVIE_FOR_DETAIL, movie);
           context.startActivity(detailIntent);
         }
       });
