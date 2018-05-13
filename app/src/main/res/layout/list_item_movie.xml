@@ -6,8 +6,8 @@
 
   <data>
     <variable
-        name="movie"
-        type="net.emojiparty.android.popularmovies.models.Movie"
+        name="presenter"
+        type="net.emojiparty.android.popularmovies.models.MoviePresenter"
         />
   </data>
 
@@ -15,12 +15,13 @@
       xmlns:tools="http://schemas.android.com/tools"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:onClick="@{() -> presenter.onMovieClicked()}"
       >
 
     <ImageView
         android:id="@+id/list_item_movie_poster"
         style="@style/squareImage"
-        app:imageUrl="@{movie.posterPath}"
+        app:imageUrl="@{presenter.posterUrl()}"
         />
 
     <View
@@ -31,7 +32,7 @@
     <TextView
         android:id="@+id/list_item_movie_title"
         tools:text="Avengers"
-        android:text="@{movie.title}"
+        android:text="@{presenter.title()}"
         style="@style/shadowText"
         />
 

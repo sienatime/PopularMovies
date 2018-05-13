@@ -7,6 +7,7 @@ import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.BR;
 import net.emojiparty.android.popularmovies.databinding.ActivityDetailMovieBinding;
 import net.emojiparty.android.popularmovies.models.Movie;
+import net.emojiparty.android.popularmovies.models.MoviePresenter;
 
 public class DetailMovieActivity extends AppCompatActivity {
   public static final String MOVIE_FOR_DETAIL = "MOVIE_FOR_DETAIL";
@@ -15,7 +16,7 @@ public class DetailMovieActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     ActivityDetailMovieBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_detail_movie);
     Movie movie = getIntent().getParcelableExtra(MOVIE_FOR_DETAIL);
-    binding.setVariable(BR.movie, movie);
+    binding.setVariable(BR.presenter, new MoviePresenter(movie, DetailMovieActivity.this));
   }
 
 //  TODO: back arrow in menu

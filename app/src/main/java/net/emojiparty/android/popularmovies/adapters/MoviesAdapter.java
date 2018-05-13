@@ -1,19 +1,17 @@
 package net.emojiparty.android.popularmovies.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import java.util.List;
 import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.BR;
-import net.emojiparty.android.popularmovies.activities.DetailMovieActivity;
 import net.emojiparty.android.popularmovies.databinding.ListItemMovieBinding;
 import net.emojiparty.android.popularmovies.models.Movie;
+import net.emojiparty.android.popularmovies.models.MoviePresenter;
 
 public class MoviesAdapter extends RecyclerView.Adapter {
   private List<Movie> movies;
@@ -43,7 +41,6 @@ public class MoviesAdapter extends RecyclerView.Adapter {
   // https://medium.com/google-developers/android-data-binding-recyclerview-db7c40d9f0e4
   static class MovieViewHolder extends RecyclerView.ViewHolder {
     ListItemMovieBinding binding;
-    Movie movie;
     Context context;
 
     MovieViewHolder(ListItemMovieBinding binding, Context context) {
@@ -53,20 +50,8 @@ public class MoviesAdapter extends RecyclerView.Adapter {
     }
 
     void bind(Movie movie) {
-      this.movie = movie;
-      binding.setVariable(BR.movie, movie);
+      binding.setVariable(BR.presenter, new MoviePresenter(movie, context));
       binding.executePendingBindings();
-      setOnClickListener();
-    }
-
-    void setOnClickListener() {
-      binding.getRoot().setOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View view) {
-          Intent detailIntent = new Intent(context, DetailMovieActivity.class);
-          detailIntent.putExtra(DetailMovieActivity.MOVIE_FOR_DETAIL, movie);
-          context.startActivity(detailIntent);
-        }
-      });
     }
   }
 }

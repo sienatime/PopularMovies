@@ -108,26 +108,13 @@ public class MoviesActivity extends AppCompatActivity {
 
   private void loadTopRatedMovies() {
     startLoading();
-    Toast.makeText(this, "loading top rated movies", Toast.LENGTH_SHORT).show();
+    Toast.makeText(this, R.string.loading_top_movies, Toast.LENGTH_SHORT).show();
     theMovieDb.loadTopRatedMovies().enqueue(onMoviesLoaded());
   }
 
   private void loadPopularMovies() {
     startLoading();
-    Toast.makeText(this, "loading popular movies", Toast.LENGTH_SHORT).show();
+    Toast.makeText(this, R.string.loading_popular_movies, Toast.LENGTH_SHORT).show();
     theMovieDb.loadPopularMovies().enqueue(onMoviesLoaded());
-  }
-
-  private void loadOneMovie() {
-    startLoading();
-    Movie offlineMovie = Movie.offlineMovie();
-    stopLoading();
-    movies.add(offlineMovie);
-    moviesAdapter.notifyDataSetChanged();
-  }
-
-  // TODO: use data binding to handle the click
-  private void openDetailMovie() {
-    Log.i("MOVIES_ACTIVITY", "I made it!");
   }
 }

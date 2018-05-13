@@ -2,6 +2,8 @@
   <string name="app_name">Popular Movies</string>
   <string name="error">Something went wrong: %s</string>
   <string name="released">Released %s</string>
-  <string name="rating">Rating: %f</string>
+  <string name="rating">Rating: %s</string>
   <string name="sort">Sort</string>
+  <string name="loading_top_movies">Loading top-rated movies of all time…</string>
+  <string name="loading_popular_movies">Loading this month\'s popular movies…</string>
 </resources>

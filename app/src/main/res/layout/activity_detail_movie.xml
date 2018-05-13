@@ -5,8 +5,8 @@
 
   <data>
     <variable
-        name="movie"
-        type="net.emojiparty.android.popularmovies.models.Movie"
+        name="presenter"
+        type="net.emojiparty.android.popularmovies.models.MoviePresenter"
         />
   </data>
 
@@ -27,7 +27,7 @@
           android:layout_width="match_parent"
           android:layout_height="180dp"
           android:scaleType="centerCrop"
-          app:imageUrl="@{movie.posterPath}"
+          app:imageUrl="@{presenter.posterUrl()}"
           app:layout_constraintLeft_toLeftOf="parent"
           app:layout_constraintRight_toRightOf="parent"
           app:layout_constraintTop_toTopOf="parent"
@@ -39,7 +39,7 @@
           android:layout_height="wrap_content"
           android:layout_marginLeft="16dp"
           android:layout_marginTop="8dp"
-          android:text="@{movie.title}"
+          android:text="@{presenter.title()}"
           android:textColor="@color/black"
           android:textSize="22sp"
           app:layout_constraintLeft_toLeftOf="parent"
@@ -52,21 +52,20 @@
           android:layout_height="20dp"
           android:layout_marginStart="16dp"
           android:layout_marginTop="8dp"
-          android:text="@{@string/released(movie.formattedReleaseDate())}"
+          android:text="@{@string/released(presenter.formattedReleaseDate())}"
           android:textSize="18sp"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toBottomOf="@+id/detail_movie_title"
           tools:text="Released April 25, 2018"
           />
 
-      <!-- TODO: format the float cuter -->
       <TextView
           android:id="@+id/detail_user_rating"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginEnd="16dp"
           android:layout_marginTop="8dp"
-          android:text="@{@string/rating(movie.voteAverage)}"
+          android:text="@{@string/rating(presenter.formattedVoteAverage())}"
           android:textSize="18sp"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintTop_toBottomOf="@+id/detail_movie_title"
@@ -79,7 +78,7 @@
           android:layout_marginEnd="16dp"
           android:layout_marginStart="16dp"
           android:layout_marginTop="16dp"
-          android:text="@{movie.overview}"
+          android:text="@{presenter.overview()}"
           android:textSize="18sp"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
