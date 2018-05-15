@@ -2,8 +2,8 @@ package net.emojiparty.android.popularmovies.models;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.format.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import net.emojiparty.android.popularmovies.activities.DetailMovieActivity;
 
 public class MoviePresenter {
@@ -34,8 +34,7 @@ public class MoviePresenter {
   }
 
   public String formattedReleaseDate() {
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMMM dd, yyyy");
-    return simpleDateFormat.format(movie.getReleaseDate());
+    return DateFormat.getMediumDateFormat(context).format(movie.getReleaseDate());
   }
 
   public void onMovieClicked() {
