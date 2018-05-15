@@ -14,10 +14,14 @@ public class DetailMovieActivity extends AppCompatActivity {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     ActivityDetailMovieBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_detail_movie);
     Movie movie = getIntent().getParcelableExtra(MOVIE_FOR_DETAIL);
     binding.setVariable(BR.presenter, new MoviePresenter(movie, DetailMovieActivity.this));
   }
 
-//  TODO: back arrow in menu
+  @Override public boolean onSupportNavigateUp() {
+    finish();
+    return true;
+  }
 }

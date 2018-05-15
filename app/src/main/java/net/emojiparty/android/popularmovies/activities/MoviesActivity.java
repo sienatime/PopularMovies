@@ -1,10 +1,10 @@
 package net.emojiparty.android.popularmovies.activities;
 
+import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +25,6 @@ public class MoviesActivity extends AppCompatActivity {
 
   private final List<Movie> movies = new ArrayList<>();
   private MoviesAdapter moviesAdapter;
-  private final int GRID_COLUMN_COUNT = 2; // TODO: do some math for landscape mode
   private boolean isSortedByPopular = true;
   private boolean requestInProgress = false;
   private TheMovieDb theMovieDb;
@@ -38,11 +37,10 @@ public class MoviesActivity extends AppCompatActivity {
     loadingIndicator = findViewById(R.id.movies_loading);
     instantiateRecyclerView();
     loadPopularMovies();
-    //loadOneMovie();
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.menu, menu);
+    getMenuInflater().inflate(R.menu.movies_menu, menu);
     return true;
   }
 
@@ -62,10 +60,16 @@ public class MoviesActivity extends AppCompatActivity {
 
   private void instantiateRecyclerView() {
     RecyclerView moviesRecyclerView = findViewById(R.id.movies_recycler_view);
-    GridLayoutManager layoutManager = new GridLayoutManager(MoviesActivity.this, GRID_COLUMN_COUNT);
+    GridLayoutManager layoutManager = new GridLayoutManager(MoviesActivity.this, columnsForGridLayout());
     moviesRecyclerView.setLayoutManager(layoutManager);
     moviesAdapter = new MoviesAdapter(movies);
     moviesRecyclerView.setAdapter(moviesAdapter);
+  }
+
+  private int columnsForGridLayout() {
+    int MINIMUM_COLUMN_WIDTH = 500;
+    int width = Resources.getSystem().getDisplayMetrics().widthPixels;
+    return width / MINIMUM_COLUMN_WIDTH;
   }
 
   private void showError(String message) {

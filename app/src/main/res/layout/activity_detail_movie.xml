@@ -49,7 +49,7 @@
       <TextView
           android:id="@+id/detail_release_date"
           android:layout_width="wrap_content"
-          android:layout_height="20dp"
+          android:layout_height="wrap_content"
           android:layout_marginStart="16dp"
           android:layout_marginTop="8dp"
           android:text="@{@string/released(presenter.formattedReleaseDate())}"
@@ -78,6 +78,7 @@
           android:layout_marginEnd="16dp"
           android:layout_marginStart="16dp"
           android:layout_marginTop="16dp"
+          android:paddingBottom="32dp"
           android:text="@{presenter.overview()}"
           android:textSize="18sp"
           app:layout_constraintEnd_toEndOf="parent"
