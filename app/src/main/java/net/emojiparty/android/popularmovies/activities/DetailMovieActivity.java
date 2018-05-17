@@ -1,6 +1,7 @@
 package net.emojiparty.android.popularmovies.activities;
 
 import android.databinding.DataBindingUtil;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import net.emojiparty.android.popularmovies.R;
@@ -14,10 +15,16 @@ public class DetailMovieActivity extends AppCompatActivity {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     ActivityDetailMovieBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_detail_movie);
     Movie movie = getIntent().getParcelableExtra(MOVIE_FOR_DETAIL);
     binding.setVariable(BR.presenter, new MoviePresenter(movie, DetailMovieActivity.this));
+    configureActionBar(movie);
+  }
+
+  private void configureActionBar(Movie movie) {
+    ActionBar actionBar = getSupportActionBar();
+    actionBar.setDisplayHomeAsUpEnabled(true);
+    actionBar.setTitle(movie.getTitle());
   }
 
   @Override public boolean onSupportNavigateUp() {
