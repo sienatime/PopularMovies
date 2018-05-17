@@ -6,6 +6,7 @@
   <string name="sort">Sort</string>
   <string name="loading_top_movies">Loading top-rated movies of all time…</string>
   <string name="loading_popular_movies">Loading this month\'s popular movies…</string>
+  <string name="details">Details</string>
   <string name="trailers">Trailers</string>
   <string name="reviews">Reviews</string>
 
