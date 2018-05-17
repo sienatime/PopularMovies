@@ -16,7 +16,7 @@ import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.adapters.MoviesAdapter;
 import net.emojiparty.android.popularmovies.models.Movie;
 import net.emojiparty.android.popularmovies.network.TheMovieDb;
-import net.emojiparty.android.popularmovies.network.TheMovieDbResponse;
+import net.emojiparty.android.popularmovies.network.MoviesResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -78,10 +78,10 @@ public class MoviesActivity extends AppCompatActivity {
   }
 
   // https://futurestud.io/tutorials/retrofit-synchronous-and-asynchronous-requests
-  private Callback<TheMovieDbResponse> onMoviesLoaded() {
-    return new Callback<TheMovieDbResponse>() {
+  private Callback<MoviesResponse> onMoviesLoaded() {
+    return new Callback<MoviesResponse>() {
       @Override
-      public void onResponse(Call<TheMovieDbResponse> call, Response<TheMovieDbResponse> response) {
+      public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
         stopLoading();
         if (response.isSuccessful()) {
           List<Movie> results = response.body().getResults();
@@ -93,7 +93,7 @@ public class MoviesActivity extends AppCompatActivity {
         }
       }
 
-      @Override public void onFailure(Call<TheMovieDbResponse> call, Throwable t) {
+      @Override public void onFailure(Call<MoviesResponse> call, Throwable t) {
         stopLoading();
         showError(t.toString());
       }

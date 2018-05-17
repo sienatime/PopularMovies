@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import net.emojiparty.android.popularmovies.models.Movie;
 
-public class TheMovieDbResponse {
+public class MoviesResponse {
   private Integer page;
   private List<Movie> results;
 
-  public TheMovieDbResponse() {
+  public MoviesResponse() {
     results = new ArrayList<>();
   }
 

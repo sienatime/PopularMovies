@@ -1,9 +1,7 @@
 package net.emojiparty.android.popularmovies.network;
 
 import java.io.IOException;
-import java.util.List;
 import net.emojiparty.android.popularmovies.BuildConfig;
-import net.emojiparty.android.popularmovies.models.Movie;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -13,6 +11,7 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 public class TheMovieDb {
   private static final String URL = "https://api.themoviedb.org/";
@@ -26,12 +25,20 @@ public class TheMovieDb {
     this.service = retrofit.create(TheMovieDbService.class);
   }
 
-  public Call<TheMovieDbResponse> loadPopularMovies() {
+  public Call<MoviesResponse> loadPopularMovies() {
     return service.moviesPopular();
   }
 
-  public Call<TheMovieDbResponse> loadTopRatedMovies() {
+  public Call<MoviesResponse> loadTopRatedMovies() {
     return service.moviesTopRated();
+  }
+
+  public Call<VideosResponse> loadTrailersForMovie(int movieId) {
+    return service.videosForMovie(movieId);
+  }
+
+  public Call<ReviewsResponse> loadReviewsForMovie(int movieId) {
+    return service.reviewsForMovie(movieId);
   }
 
   private OkHttpClient buildClient() {
@@ -55,8 +62,12 @@ public class TheMovieDb {
   }
 
   interface TheMovieDbService {
-    @GET("/3/movie/popular") Call<TheMovieDbResponse> moviesPopular();
+    @GET("/3/movie/popular") Call<MoviesResponse> moviesPopular();
 
-    @GET("/3/movie/top_rated") Call<TheMovieDbResponse> moviesTopRated();
+    @GET("/3/movie/top_rated") Call<MoviesResponse> moviesTopRated();
+
+    @GET("/3/movie/{id}/videos") Call<VideosResponse> videosForMovie(@Path("id") int movieId);
+
+    @GET("/3/movie/{id}/reviews") Call<ReviewsResponse> reviewsForMovie(@Path("id") int movieId);
   }
 }

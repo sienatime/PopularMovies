@@ -10,8 +10,8 @@ public class BindingMethods {
   public static void loadImageFromUrl(ImageView view, String url) {
     Picasso.get()
         .load(url)
-        .placeholder(R.color.colorPrimaryDark)
-        .error(R.color.colorAccent)
+        .placeholder(R.color.primaryColor)
+        .error(R.color.secondaryColor)
         .into(view);
   }
 }

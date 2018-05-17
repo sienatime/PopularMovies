@@ -40,7 +40,7 @@
           android:layout_marginLeft="16dp"
           android:layout_marginTop="8dp"
           android:text="@{presenter.title()}"
-          android:textColor="@color/black"
+          android:textColor="@color/primaryTextColor"
           android:textSize="22sp"
           app:layout_constraintLeft_toLeftOf="parent"
           app:layout_constraintTop_toBottomOf="@id/detail_movie_poster"
@@ -85,6 +85,30 @@
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toBottomOf="@+id/detail_release_date"
           tools:text="As the Avengers and their allies have continued to protect the world from threats too large for any one hero to handle, a new danger has emerged from the cosmic shadows: Thanos. A despot of intergalactic infamy, his goal is to collect all six Infinity Stones, artifacts of unimaginable power, and use them to inflict his twisted will on all of reality. Everything the Avengers have fought for has led up to this moment - the fate of Earth and existence itself has never been more uncertain."
+          />
+
+      <View
+          android:id="@+id/divider1"
+          style="@style/divider"
+          app:layout_constraintTop_toBottomOf="@id/detail_overview"/>
+
+      <TextView
+          android:id="@+id/trailers_header"
+          style="@style/subSectionHeader"
+          android:text="@string/trailers"
+          app:layout_constraintTop_toBottomOf="@id/divider1"
+          />
+
+      <View
+          android:id="@+id/divider2"
+          style="@style/divider"
+          app:layout_constraintTop_toBottomOf="@id/trailers_header"/>
+
+      <TextView
+          android:id="@+id/reviews_header"
+          style="@style/subSectionHeader"
+          android:text="@string/reviews"
+          app:layout_constraintTop_toBottomOf="@id/divider2"
           />
 
     </android.support.constraint.ConstraintLayout>
