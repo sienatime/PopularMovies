@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout>
+  <data>
+    <variable
+        name="presenter"
+        type="net.emojiparty.android.popularmovies.models.Review"
+        />
+  </data>
+
+  <LinearLayout
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:paddingTop="8dp"
+      android:paddingStart="16dp"
+      android:paddingLeft="16dp"
+      android:paddingEnd="16dp"
+      android:paddingRight="16dp"
+      android:paddingBottom="8dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:text="@{presenter.content}"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@{presenter.author}"
+        android:textSize="18sp"
+        android:textStyle="italic"
+        android:textAlignment="viewEnd"
+        android:paddingBottom="8dp"
+        />
+
+    <View style="@style/divider"/>
+
+  </LinearLayout>
+</layout>

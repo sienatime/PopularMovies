@@ -3,9 +3,12 @@ package net.emojiparty.android.popularmovies.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Movie implements Parcelable {
+  private int id;
   private String title;
   private String overview;
 
@@ -21,11 +24,20 @@ public class Movie implements Parcelable {
   public Movie() { }
 
   private Movie(Parcel parcel) {
+    this.id = parcel.readInt();
     this.title = parcel.readString();
     this.overview = parcel.readString();
     this.posterPath = parcel.readString();
     this.voteAverage = parcel.readFloat();
     this.releaseDate = new Date(parcel.readLong());
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
   }
 
   public String getTitle() {
@@ -73,6 +85,7 @@ public class Movie implements Parcelable {
   }
 
   @Override public void writeToParcel(Parcel parcel, int i) {
+    parcel.writeInt(this.id);
     parcel.writeString(this.title);
     parcel.writeString(this.overview);
     parcel.writeString(this.posterPath);
@@ -90,4 +103,20 @@ public class Movie implements Parcelable {
       return new Movie[i];
     }
   };
+
+  public static Movie offlineMovie() {
+    Movie movie = new Movie();
+    movie.setId(1);
+    movie.setTitle("Avengers: Infinity War");
+    movie.setPosterPath("/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg");
+    movie.setOverview("As the Avengers and their allies have continued to protect the world from threats too large for any one hero to handle, a new danger has emerged from the cosmic shadows: Thanos. A despot of intergalactic infamy, his goal is to collect all six Infinity Stones, artifacts of unimaginable power, and use them to inflict his twisted will on all of reality. Everything the Avengers have fought for has led up to this moment - the fate of Earth and existence itself has never been more uncertain.");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd");
+    try {
+        movie.setReleaseDate(dateFormat.parse("2018-04-25"));
+      } catch (ParseException e) {
+        movie.setReleaseDate(new Date());
+      }
+    movie.setVoteAverage(8.7f);
+    return movie;
+  }
 }

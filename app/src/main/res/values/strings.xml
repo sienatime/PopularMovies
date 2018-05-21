@@ -9,5 +9,7 @@
   <string name="details">Details</string>
   <string name="trailers">Trailers</string>
   <string name="reviews">Reviews</string>
+  <string name="watch_on">Watch on %s</string>
+  <string name="trailer_type">%s: %s</string>
 
 </resources>

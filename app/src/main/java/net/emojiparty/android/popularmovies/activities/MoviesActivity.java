@@ -13,8 +13,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 import net.emojiparty.android.popularmovies.R;
-import net.emojiparty.android.popularmovies.adapters.MoviesAdapter;
+import net.emojiparty.android.popularmovies.adapters.DataBindingAdapter;
 import net.emojiparty.android.popularmovies.models.Movie;
+import net.emojiparty.android.popularmovies.models.MoviePresenter;
 import net.emojiparty.android.popularmovies.network.TheMovieDb;
 import net.emojiparty.android.popularmovies.network.MoviesResponse;
 import retrofit2.Call;
@@ -23,8 +24,8 @@ import retrofit2.Response;
 
 public class MoviesActivity extends AppCompatActivity {
 
-  private final List<Movie> movies = new ArrayList<>();
-  private MoviesAdapter moviesAdapter;
+  private final List<MoviePresenter> movies = new ArrayList<>();
+  private DataBindingAdapter moviesAdapter;
   private boolean isSortedByPopular = true;
   private boolean requestInProgress = false;
   private TheMovieDb theMovieDb;
@@ -36,12 +37,21 @@ public class MoviesActivity extends AppCompatActivity {
     setContentView(R.layout.activity_movies);
     loadingIndicator = findViewById(R.id.movies_loading);
     instantiateRecyclerView();
-    loadPopularMovies();
+    //loadPopularMovies();
+    loadOneMovie();
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.movies_menu, menu);
     return true;
+  }
+
+  private void loadOneMovie() {
+    startLoading();
+    Movie offlineMovie = Movie.offlineMovie();
+    stopLoading();
+    movies.add(new MoviePresenter(offlineMovie, this));
+    moviesAdapter.notifyDataSetChanged();
   }
 
   @Override public boolean onOptionsItemSelected(MenuItem item) {
@@ -62,7 +72,7 @@ public class MoviesActivity extends AppCompatActivity {
     RecyclerView moviesRecyclerView = findViewById(R.id.movies_recycler_view);
     GridLayoutManager layoutManager = new GridLayoutManager(MoviesActivity.this, columnsForGridLayout());
     moviesRecyclerView.setLayoutManager(layoutManager);
-    moviesAdapter = new MoviesAdapter(movies);
+    moviesAdapter = new DataBindingAdapter(movies, R.layout.list_item_movie);
     moviesRecyclerView.setAdapter(moviesAdapter);
   }
 
@@ -86,7 +96,7 @@ public class MoviesActivity extends AppCompatActivity {
         if (response.isSuccessful()) {
           List<Movie> results = response.body().getResults();
           movies.clear();
-          movies.addAll(results);
+          movies.addAll(mapMoviesToPresenters(results));
           moviesAdapter.notifyDataSetChanged();
         } else {
           showError(response.toString());
@@ -98,6 +108,16 @@ public class MoviesActivity extends AppCompatActivity {
         showError(t.toString());
       }
     };
+  }
+
+  // TODO there is probably a cooler way to do this with like, a lambda or something
+  private List<MoviePresenter> mapMoviesToPresenters(List<Movie> movies) {
+    List<MoviePresenter> presenters = new ArrayList<>();
+    for (int i = 0; i < movies.size(); i++) {
+      Movie movie = movies.get(i);
+      presenters.add(new MoviePresenter(movie, this));
+    }
+    return presenters;
   }
 
   private void startLoading() {
