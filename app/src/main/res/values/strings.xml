@@ -11,5 +11,7 @@
   <string name="reviews">Reviews</string>
   <string name="watch_on">Watch on %s</string>
   <string name="trailer_type">%s: %s</string>
+  <string name="no_reviews">No reviews found.</string>
+  <string name="no_trailers">No trailers found.</string>
 
 </resources>

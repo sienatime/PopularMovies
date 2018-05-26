@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +30,14 @@ public class ReviewsFragment extends Fragment {
   private DataBindingAdapter reviewsAdapter;
   private final List<Review> reviews = new ArrayList<>();
   private ProgressBar loadingIndicator;
+  private TextView noReviews;
 
   @Nullable @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_reviews, container, false);
     loadingIndicator = view.findViewById(R.id.reviews_loading);
+    noReviews = view.findViewById(R.id.no_reviews);
     instantiateRecyclerView(view);
     Movie movie = getArguments().getParcelable(MOVIE_FOR_DETAIL);
     loadReviews(movie);
@@ -53,6 +56,7 @@ public class ReviewsFragment extends Fragment {
           reviews.clear();
           reviews.addAll(response.body().getResults());
           reviewsAdapter.notifyDataSetChanged();
+          noReviews.setVisibility(reviews.size() == 0 ? View.VISIBLE : View.INVISIBLE);
         } else {
           showError(response.toString());
         }

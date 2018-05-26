@@ -9,6 +9,16 @@
       android:layout_height="wrap_content"
       android:scrollbars="vertical"/>
 
+  <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:visibility="invisible"
+      android:id="@+id/no_trailers"
+      android:padding="16dp"
+      android:textSize="18sp"
+      android:text="@string/no_trailers"
+      />
+
   <ProgressBar
       android:id="@+id/trailers_loading"
       style="@style/loading" />
