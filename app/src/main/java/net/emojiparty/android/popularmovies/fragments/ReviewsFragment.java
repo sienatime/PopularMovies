@@ -36,9 +36,9 @@ public class ReviewsFragment extends Fragment {
     View view = inflater.inflate(R.layout.fragment_reviews, container, false);
     loadingIndicator = view.findViewById(R.id.reviews_loading);
     instantiateRecyclerView(view);
-    //Movie movie = getArguments().getParcelable(MOVIE_FOR_DETAIL);
-    //loadReviews(movie);
-    loadOneReview();
+    Movie movie = getArguments().getParcelable(MOVIE_FOR_DETAIL);
+    loadReviews(movie);
+    //loadOneReview();
     return view;
   }
 

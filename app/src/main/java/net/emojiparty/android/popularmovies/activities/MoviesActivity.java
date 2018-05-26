@@ -37,8 +37,8 @@ public class MoviesActivity extends AppCompatActivity {
     setContentView(R.layout.activity_movies);
     loadingIndicator = findViewById(R.id.movies_loading);
     instantiateRecyclerView();
-    //loadPopularMovies();
-    loadOneMovie();
+    loadPopularMovies();
+    //loadOneMovie();
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {

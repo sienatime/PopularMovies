@@ -23,6 +23,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static net.emojiparty.android.popularmovies.activities.DetailMovieActivity.MOVIE_FOR_DETAIL;
+
 public class TrailersFragment extends Fragment {
   private List<Trailer> trailers = new ArrayList<>();
   private DataBindingAdapter listAdapter;
@@ -34,9 +36,9 @@ public class TrailersFragment extends Fragment {
     View view = inflater.inflate(R.layout.fragment_trailers, container, false);
     loadingIndicator = view.findViewById(R.id.trailers_loading);
     instantiateRecyclerView(view);
-    loadOneTrailer();
-    //Movie movie = getArguments().getParcelable(MOVIE_FOR_DETAIL);
-    //loadTrailers(movie);
+    //loadOneTrailer();
+    Movie movie = getArguments().getParcelable(MOVIE_FOR_DETAIL);
+    loadTrailers(movie);
     return view;
   }
 
