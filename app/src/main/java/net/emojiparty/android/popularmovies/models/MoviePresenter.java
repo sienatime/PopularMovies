@@ -3,6 +3,7 @@ package net.emojiparty.android.popularmovies.models;
 import android.content.Context;
 import android.content.Intent;
 import android.text.format.DateFormat;
+import android.widget.Toast;
 import java.text.DecimalFormat;
 import net.emojiparty.android.popularmovies.activities.DetailMovieActivity;
 
@@ -42,4 +43,8 @@ public class MoviePresenter {
     detailIntent.putExtra(DetailMovieActivity.MOVIE_FOR_DETAIL, movie);
     context.startActivity(detailIntent);
   };
+
+  public void onFavoriteFABClicked() {
+    Toast.makeText(context, "u clicked FAB", Toast.LENGTH_SHORT).show();
+  }
 }

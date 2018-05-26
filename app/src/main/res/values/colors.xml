@@ -9,4 +9,5 @@
   <color name="primaryTextColor">#000000</color>
   <color name="secondaryTextColor">#ffffff</color>
   <color name="black30p">#4D000000</color>
+  <color name="fabColor">#ffee58</color>
 </resources>
