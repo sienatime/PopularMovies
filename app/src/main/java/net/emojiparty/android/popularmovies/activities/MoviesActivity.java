@@ -110,7 +110,6 @@ public class MoviesActivity extends AppCompatActivity {
     };
   }
 
-  // TODO there is probably a cooler way to do this with like, a lambda or something
   private List<MoviePresenter> mapMoviesToPresenters(List<Movie> movies) {
     List<MoviePresenter> presenters = new ArrayList<>();
     for (int i = 0; i < movies.size(); i++) {

@@ -18,6 +18,7 @@ import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.adapters.DataBindingAdapter;
 import net.emojiparty.android.popularmovies.models.Movie;
 import net.emojiparty.android.popularmovies.models.Trailer;
+import net.emojiparty.android.popularmovies.models.TrailerPresenter;
 import net.emojiparty.android.popularmovies.network.TheMovieDb;
 import net.emojiparty.android.popularmovies.network.VideosResponse;
 import retrofit2.Call;
@@ -27,7 +28,7 @@ import retrofit2.Response;
 import static net.emojiparty.android.popularmovies.activities.DetailMovieActivity.MOVIE_FOR_DETAIL;
 
 public class TrailersFragment extends Fragment {
-  private List<Trailer> trailers = new ArrayList<>();
+  private List<TrailerPresenter> trailers = new ArrayList<>();
   private DataBindingAdapter listAdapter;
   private ProgressBar loadingIndicator;
   private TextView noTrailers;
@@ -54,7 +55,7 @@ public class TrailersFragment extends Fragment {
         stopLoading();
         if (response.isSuccessful()) {
           trailers.clear();
-          trailers.addAll(response.body().getResults());
+          trailers.addAll(mapTrailersToPresenters(response.body().getResults()));
           listAdapter.notifyDataSetChanged();
           noTrailers.setVisibility(trailers.size() == 0 ? View.VISIBLE : View.INVISIBLE);
         } else {
@@ -68,6 +69,15 @@ public class TrailersFragment extends Fragment {
         showError(t.getMessage());
       }
     });
+  }
+
+  private List<TrailerPresenter> mapTrailersToPresenters(List<Trailer> trailers) {
+    List<TrailerPresenter> presenters = new ArrayList<>();
+    for (int i = 0; i < trailers.size(); i++) {
+      Trailer trailer = trailers.get(i);
+      presenters.add(new TrailerPresenter(trailer, getContext()));
+    }
+    return presenters;
   }
 
   private void instantiateRecyclerView(View view) {
@@ -85,7 +95,7 @@ public class TrailersFragment extends Fragment {
     trailer.setName("Official Trailer");
     trailer.setSite("YouTube");
     trailer.setType("Trailer");
-    trailers.add(trailer);
+    trailers.add(new TrailerPresenter(trailer, getContext()));
   }
 
   private void showError(String message) {

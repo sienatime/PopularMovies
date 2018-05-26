@@ -7,7 +7,7 @@
   <data>
     <variable
         name="presenter"
-        type="net.emojiparty.android.popularmovies.models.Trailer"
+        type="net.emojiparty.android.popularmovies.models.TrailerPresenter"
         />
   </data>
 
@@ -19,7 +19,8 @@
       android:paddingLeft="16dp"
       android:paddingEnd="16dp"
       android:paddingRight="16dp"
-      android:paddingBottom="8dp">
+      android:paddingBottom="8dp"
+      android:onClick="@{() -> presenter.onTrailerClicked()}">
 
     <ImageView
         android:id="@+id/imageView"
