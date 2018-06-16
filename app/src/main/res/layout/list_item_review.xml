@@ -34,7 +34,7 @@
         android:textSize="18sp"
         android:textStyle="italic"
         android:textAlignment="viewEnd"
-        android:paddingBottom="8dp"
+        android:paddingBottom="72dp"
         />
 
     <View style="@style/divider"/>
