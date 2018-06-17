@@ -9,8 +9,8 @@ import net.emojiparty.android.popularmovies.models.Movie;
 
 // referenced Udacity Exercises 9b To-do app
 
-@Database(entities = { Movie.class }, version = 3, exportSchema = false)
-@TypeConverters({ DateConverter.class, ObservableBooleanConverter.class })
+@Database(entities = { Movie.class }, version = 5, exportSchema = false)
+@TypeConverters({ DateConverter.class })
 public abstract class LocalDatabase extends RoomDatabase {
   private static final Object LOCK = new Object();
   private static final String DATABASE_NAME = "popular_movies";

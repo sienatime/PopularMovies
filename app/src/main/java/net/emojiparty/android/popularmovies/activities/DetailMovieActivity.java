@@ -2,13 +2,13 @@ package net.emojiparty.android.popularmovies.activities;
 
 import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.BR;
+import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.adapters.DetailPagerAdapter;
 import net.emojiparty.android.popularmovies.databinding.ActivityDetailMovieBinding;
 import net.emojiparty.android.popularmovies.models.Movie;
@@ -21,19 +21,31 @@ public class DetailMovieActivity extends AppCompatActivity {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     ActivityDetailMovieBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_detail_movie);
+    binding.setLifecycleOwner(DetailMovieActivity.this); // for LiveData usage inside Presenter
+
     final Movie movie = getIntent().getParcelableExtra(MOVIE_FOR_DETAIL);
-    syncMovieWithLocalDatabase(movie);
-    binding.setVariable(BR.presenter, new MoviePresenter(movie, DetailMovieActivity.this));
+    configureViewWithMovie(movie);
+    setupPresenter(movie, binding);
+  }
+
+  private void configureViewWithMovie(Movie movie) {
     configureActionBar(movie);
     initializePager(movie);
   }
 
-  private void syncMovieWithLocalDatabase(final Movie movie) {
+  private void setupPresenter(Movie movie, ActivityDetailMovieBinding binding) {
+    MoviePresenter moviePresenter = new MoviePresenter(movie, DetailMovieActivity.this);
+    syncWithLocalDatabase(moviePresenter);
+    binding.setVariable(BR.presenter, moviePresenter);
+  }
+
+  private void syncWithLocalDatabase(final MoviePresenter moviePresenter) {
     AsyncTask.execute(new Runnable() {
       @Override public void run() {
         LocalDatabase localDb = LocalDatabase.getInstance(DetailMovieActivity.this);
-        boolean favorite = localDb.movieDao().loadMovieById(movie.getId()) != null;
-        movie.setFavorite(favorite);
+        Movie localMovie = localDb.movieDao().loadMovieById(moviePresenter.id());
+        boolean favorite = localMovie != null && localMovie.isFavorite();
+        moviePresenter.isFavorite().postValue(favorite);
       }
     });
   }

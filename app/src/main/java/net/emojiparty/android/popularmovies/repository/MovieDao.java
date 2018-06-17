@@ -5,6 +5,7 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 import net.emojiparty.android.popularmovies.models.Movie;
 
 @Dao public interface MovieDao {
@@ -16,4 +17,7 @@ import net.emojiparty.android.popularmovies.models.Movie;
 
   @Query("SELECT * FROM movies where id = :id")
   Movie loadMovieById(int id);
+
+  @Update
+  public void updateMovie(Movie movie);
 }
