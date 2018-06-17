@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.databinding.ObservableBoolean;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
@@ -16,6 +17,7 @@ import java.util.Date;
   private int id;
   private String title;
   private String overview;
+  private ObservableBoolean favorite = new ObservableBoolean();
 
   @SerializedName("poster_path") @ColumnInfo(name = "poster_path") private String posterPath;
 
@@ -24,13 +26,14 @@ import java.util.Date;
   @SerializedName("release_date") @ColumnInfo(name = "release_date") private Date releaseDate;
 
   public Movie(int id, String title, String overview, String posterPath, float voteAverage,
-      Date releaseDate) {
+      Date releaseDate, ObservableBoolean favorite) {
     this.id = id;
     this.title = title;
     this.overview = overview;
     this.posterPath = posterPath;
     this.voteAverage = voteAverage;
     this.releaseDate = releaseDate;
+    this.favorite = favorite;
   }
 
   @Ignore // for Gson
@@ -45,6 +48,7 @@ import java.util.Date;
     this.posterPath = parcel.readString();
     this.voteAverage = parcel.readFloat();
     this.releaseDate = new Date(parcel.readLong());
+    this.favorite = new ObservableBoolean(parcel.readInt() == 1);
   }
 
   public int getId() {
@@ -95,6 +99,14 @@ import java.util.Date;
     this.releaseDate = releaseDate;
   }
 
+  public ObservableBoolean getFavorite() {
+    return favorite;
+  }
+
+  public void setFavorite(boolean favorite) {
+    this.favorite.set(favorite);
+  }
+
   @Override public int describeContents() {
     return 0;
   }
@@ -106,6 +118,7 @@ import java.util.Date;
     parcel.writeString(this.posterPath);
     parcel.writeFloat(this.voteAverage);
     parcel.writeLong(this.releaseDate.getTime());
+    parcel.writeInt(this.favorite.get() ? 1 : 0);
   }
 
   // https://guides.codepath.com/android/using-parcelable
@@ -133,6 +146,7 @@ import java.util.Date;
       movie.setReleaseDate(new Date());
     }
     movie.setVoteAverage(8.7f);
+    movie.setFavorite(false);
     return movie;
   }
 }

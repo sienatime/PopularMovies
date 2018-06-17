@@ -1,6 +1,7 @@
 package net.emojiparty.android.popularmovies.activities;
 
 import android.databinding.DataBindingUtil;
+import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -12,6 +13,7 @@ import net.emojiparty.android.popularmovies.adapters.DetailPagerAdapter;
 import net.emojiparty.android.popularmovies.databinding.ActivityDetailMovieBinding;
 import net.emojiparty.android.popularmovies.models.Movie;
 import net.emojiparty.android.popularmovies.models.MoviePresenter;
+import net.emojiparty.android.popularmovies.repository.LocalDatabase;
 
 public class DetailMovieActivity extends AppCompatActivity {
   public static final String MOVIE_FOR_DETAIL = "MOVIE_FOR_DETAIL";
@@ -19,10 +21,21 @@ public class DetailMovieActivity extends AppCompatActivity {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     ActivityDetailMovieBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_detail_movie);
-    Movie movie = getIntent().getParcelableExtra(MOVIE_FOR_DETAIL);
+    final Movie movie = getIntent().getParcelableExtra(MOVIE_FOR_DETAIL);
+    syncMovieWithLocalDatabase(movie);
     binding.setVariable(BR.presenter, new MoviePresenter(movie, DetailMovieActivity.this));
     configureActionBar(movie);
     initializePager(movie);
+  }
+
+  private void syncMovieWithLocalDatabase(final Movie movie) {
+    AsyncTask.execute(new Runnable() {
+      @Override public void run() {
+        LocalDatabase localDb = LocalDatabase.getInstance(DetailMovieActivity.this);
+        boolean favorite = localDb.movieDao().loadMovieById(movie.getId()) != null;
+        movie.setFavorite(favorite);
+      }
+    });
   }
 
   private void configureActionBar(Movie movie) {

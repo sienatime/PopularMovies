@@ -2,10 +2,12 @@ package net.emojiparty.android.popularmovies.models;
 
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.ObservableBoolean;
+import android.os.AsyncTask;
 import android.text.format.DateFormat;
-import android.widget.Toast;
 import java.text.DecimalFormat;
 import net.emojiparty.android.popularmovies.activities.DetailMovieActivity;
+import net.emojiparty.android.popularmovies.repository.LocalDatabase;
 
 public class MoviePresenter {
   private Movie movie;
@@ -28,6 +30,10 @@ public class MoviePresenter {
     return "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
   }
 
+  public ObservableBoolean isFavorite() {
+    return movie.getFavorite();
+  }
+
   // http://www.java67.com/2014/06/how-to-format-float-or-double-number-java-example.html#ixzz5FOpsJS5l
   public String formattedVoteAverage() {
     DecimalFormat df = new DecimalFormat("#.##");
@@ -45,6 +51,17 @@ public class MoviePresenter {
   };
 
   public void onFavoriteFABClicked() {
-    Toast.makeText(context, "u clicked FAB", Toast.LENGTH_SHORT).show();
+    AsyncTask.execute(new Runnable() {
+      @Override public void run() {
+        LocalDatabase localDb = LocalDatabase.getInstance(context);
+        if (movie.getFavorite().get()) {
+          localDb.movieDao().deleteFavoriteMovie(movie);
+          movie.setFavorite(false);
+        } else {
+          localDb.movieDao().insertFavoriteMovie(movie);
+          movie.setFavorite(true);
+        }
+      }
+    });
   }
 }
