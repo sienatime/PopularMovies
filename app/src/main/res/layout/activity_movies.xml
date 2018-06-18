@@ -13,6 +13,16 @@
       android:layout_height="match_parent"
       android:scrollbars="vertical" />
 
+  <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:visibility="invisible"
+      android:id="@+id/no_movies"
+      android:padding="16dp"
+      android:textSize="18sp"
+      android:text="@string/no_favorites"
+      />
+
   <ProgressBar
       android:id="@+id/movies_loading"
       style="@style/loading" />

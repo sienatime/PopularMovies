@@ -7,8 +7,6 @@ import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity(tableName = "movies") public class Movie implements Parcelable {
@@ -24,6 +22,7 @@ import java.util.Date;
 
   @SerializedName("release_date") @ColumnInfo(name = "release_date") private Date releaseDate;
 
+  // used by Room
   public Movie(int id, String title, String overview, String posterPath, float voteAverage,
       Date releaseDate, boolean favorite) {
     this.id = id;
@@ -35,11 +34,11 @@ import java.util.Date;
     this.favorite = favorite;
   }
 
-  @Ignore // for Gson
+  @Ignore // Ignored by Room; used for Gson
   public Movie() {
   }
 
-  @Ignore // for Parcelables
+  @Ignore // Ignored by Room; used by Parcelables
   private Movie(Parcel parcel) {
     this.id = parcel.readInt();
     this.title = parcel.readString();
@@ -128,21 +127,4 @@ import java.util.Date;
       return new Movie[i];
     }
   };
-
-  public static Movie offlineMovie() {
-    Movie movie = new Movie();
-    movie.setId(1);
-    movie.setTitle("Avengers: Infinity War");
-    movie.setPosterPath("/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg");
-    movie.setOverview(
-        "As the Avengers and their allies have continued to protect the world from threats too large for any one hero to handle, a new danger has emerged from the cosmic shadows: Thanos. A despot of intergalactic infamy, his goal is to collect all six Infinity Stones, artifacts of unimaginable power, and use them to inflict his twisted will on all of reality. Everything the Avengers have fought for has led up to this moment - the fate of Earth and existence itself has never been more uncertain.");
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd");
-    try {
-      movie.setReleaseDate(dateFormat.parse("2018-04-25"));
-    } catch (ParseException e) {
-      movie.setReleaseDate(new Date());
-    }
-    movie.setVoteAverage(8.7f);
-    return movie;
-  }
 }

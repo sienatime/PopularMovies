@@ -4,8 +4,12 @@
   <string name="released">Released %s</string>
   <string name="rating">Rating: %s</string>
   <string name="sort">Sort</string>
+  <string name="popular">Popular</string>
+  <string name="top_rated">Top Rated</string>
+  <string name="my_favorites">My Favorites</string>
   <string name="loading_top_movies">Loading top-rated movies of all time…</string>
   <string name="loading_popular_movies">Loading this month\'s popular movies…</string>
+  <string name="loading_favorite_movies">Loading your favorite movies…</string>
   <string name="details">Details</string>
   <string name="trailers">Trailers</string>
   <string name="reviews">Reviews</string>
@@ -13,4 +17,5 @@
   <string name="trailer_type">%s: %s</string>
   <string name="no_reviews">No reviews found.</string>
   <string name="no_trailers">No trailers found.</string>
+  <string name="no_favorites">No favorite movies found. Choose another sort and pick some!</string>
 </resources>

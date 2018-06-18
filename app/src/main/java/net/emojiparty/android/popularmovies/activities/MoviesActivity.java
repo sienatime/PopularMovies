@@ -1,14 +1,20 @@
 package net.emojiparty.android.popularmovies.activities;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.res.Resources;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +22,9 @@ import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.adapters.DataBindingAdapter;
 import net.emojiparty.android.popularmovies.models.Movie;
 import net.emojiparty.android.popularmovies.models.MoviePresenter;
-import net.emojiparty.android.popularmovies.network.TheMovieDb;
 import net.emojiparty.android.popularmovies.network.MoviesResponse;
+import net.emojiparty.android.popularmovies.network.TheMovieDb;
+import net.emojiparty.android.popularmovies.repository.LocalDatabase;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -26,19 +33,21 @@ public class MoviesActivity extends AppCompatActivity {
 
   private final List<MoviePresenter> movies = new ArrayList<>();
   private DataBindingAdapter moviesAdapter;
-  private boolean isSortedByPopular = true;
   private boolean requestInProgress = false;
   private TheMovieDb theMovieDb;
   private ProgressBar loadingIndicator;
+  private TextView noFavorites;
+  private LiveData<List<Movie>> liveMoviesFromDb;
+  private Observer<List<Movie>> liveMoviesObserver;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     theMovieDb = new TheMovieDb();
     setContentView(R.layout.activity_movies);
     loadingIndicator = findViewById(R.id.movies_loading);
+    noFavorites = findViewById(R.id.no_movies);
     instantiateRecyclerView();
     loadPopularMovies();
-    //loadOneMovie();
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {
@@ -46,22 +55,21 @@ public class MoviesActivity extends AppCompatActivity {
     return true;
   }
 
-  private void loadOneMovie() {
-    startLoading();
-    Movie offlineMovie = Movie.offlineMovie();
-    stopLoading();
-    movies.add(new MoviePresenter(offlineMovie, this));
-    moviesAdapter.notifyDataSetChanged();
+  @Override
+  public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    super.onCreateContextMenu(menu, v, menuInfo);
+    MenuInflater menuInflater = getMenuInflater();
+    menuInflater.inflate(R.menu.movies_context_menu, menu);
   }
 
   @Override public boolean onOptionsItemSelected(MenuItem item) {
-    if (item.getItemId() == R.id.toggle_sort && !requestInProgress) {
-      if (isSortedByPopular) {
-        isSortedByPopular = false;
+    if (!requestInProgress) {
+      if (item.getItemId() == R.id.top_rated) {
         loadTopRatedMovies();
-      } else {
-        isSortedByPopular = true;
+      } else if (item.getItemId() == R.id.popular) {
         loadPopularMovies();
+      } else if (item.getItemId() == R.id.my_favorites) {
+        loadFavoriteMovies();
       }
       return true;
     }
@@ -95,9 +103,7 @@ public class MoviesActivity extends AppCompatActivity {
         stopLoading();
         if (response.isSuccessful()) {
           List<Movie> results = response.body().getResults();
-          movies.clear();
-          movies.addAll(mapMoviesToPresenters(results));
-          moviesAdapter.notifyDataSetChanged();
+          setMoviesInAdapter(results);
         } else {
           showError(response.toString());
         }
@@ -108,6 +114,12 @@ public class MoviesActivity extends AppCompatActivity {
         showError(t.toString());
       }
     };
+  }
+
+  private void setMoviesInAdapter(List<Movie> results) {
+    movies.clear();
+    movies.addAll(mapMoviesToPresenters(results));
+    moviesAdapter.notifyDataSetChanged();
   }
 
   private List<MoviePresenter> mapMoviesToPresenters(List<Movie> movies) {
@@ -121,6 +133,7 @@ public class MoviesActivity extends AppCompatActivity {
 
   private void startLoading() {
     requestInProgress = true;
+    noFavorites.setVisibility(View.INVISIBLE);
     loadingIndicator.setVisibility(View.VISIBLE);
   }
 
@@ -129,15 +142,43 @@ public class MoviesActivity extends AppCompatActivity {
     loadingIndicator.setVisibility(View.INVISIBLE);
   }
 
+  private void removeFavoritesObserver() {
+    // otherwise, when a movie is favorited, the list will refresh with current favorites
+    // regardless of what sort was previously selected
+    if (liveMoviesFromDb != null) {
+      liveMoviesFromDb.removeObserver(liveMoviesObserver);
+    }
+  }
+
   private void loadTopRatedMovies() {
+    removeFavoritesObserver();
     startLoading();
     Toast.makeText(this, R.string.loading_top_movies, Toast.LENGTH_SHORT).show();
     theMovieDb.loadTopRatedMovies().enqueue(onMoviesLoaded());
   }
 
   private void loadPopularMovies() {
+    removeFavoritesObserver();
     startLoading();
     Toast.makeText(this, R.string.loading_popular_movies, Toast.LENGTH_SHORT).show();
     theMovieDb.loadPopularMovies().enqueue(onMoviesLoaded());
+  }
+
+  private void loadFavoriteMovies() {
+    startLoading();
+    Toast.makeText(this, R.string.loading_favorite_movies, Toast.LENGTH_SHORT).show();
+
+    LocalDatabase localDatabase = LocalDatabase.getInstance(MoviesActivity.this);
+    liveMoviesFromDb = localDatabase.movieDao().loadAllFavoriteMovies();
+    liveMoviesObserver = new Observer<List<Movie>>() {
+      @Override public void onChanged(@Nullable List<Movie> favoriteMovies) {
+        stopLoading();
+        setMoviesInAdapter(favoriteMovies);
+        if (favoriteMovies.size() == 0) {
+          noFavorites.setVisibility(View.VISIBLE);
+        }
+      }
+    };
+    liveMoviesFromDb.observe(MoviesActivity.this, liveMoviesObserver);
   }
 }

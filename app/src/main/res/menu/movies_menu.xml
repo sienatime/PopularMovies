@@ -5,6 +5,23 @@
       android:title="@string/sort"
       android:orderInCategory="1"
       app:showAsAction="ifRoom"
-      android:id="@+id/toggle_sort"
-      />
+      android:id="@+id/toggle_sort">
+    <menu>
+      <item
+          android:title="@string/popular"
+          android:orderInCategory="1"
+          app:showAsAction="never"
+          android:id="@+id/popular" />
+      <item
+          android:title="@string/top_rated"
+          android:orderInCategory="1"
+          app:showAsAction="never"
+          android:id="@+id/top_rated" />
+      <item
+          android:title="@string/my_favorites"
+          android:orderInCategory="1"
+          app:showAsAction="never"
+          android:id="@+id/my_favorites" />
+    </menu>
+  </item>
 </menu>
