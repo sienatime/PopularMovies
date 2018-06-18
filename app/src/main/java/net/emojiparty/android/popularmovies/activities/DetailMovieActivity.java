@@ -12,7 +12,7 @@ import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.adapters.DetailPagerAdapter;
 import net.emojiparty.android.popularmovies.databinding.ActivityDetailMovieBinding;
 import net.emojiparty.android.popularmovies.models.Movie;
-import net.emojiparty.android.popularmovies.models.MoviePresenter;
+import net.emojiparty.android.popularmovies.presenters.MoviePresenter;
 import net.emojiparty.android.popularmovies.repository.LocalDatabase;
 
 public class DetailMovieActivity extends AppCompatActivity {

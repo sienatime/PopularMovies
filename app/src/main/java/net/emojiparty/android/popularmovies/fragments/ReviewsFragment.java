@@ -39,7 +39,6 @@ public class ReviewsFragment extends Fragment {
     instantiateRecyclerView(view);
     Movie movie = getArguments().getParcelable(MOVIE_FOR_DETAIL);
     loadReviews(movie);
-    //loadOneReview();
     return view;
   }
 

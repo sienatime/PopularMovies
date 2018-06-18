@@ -1,9 +1,10 @@
-package net.emojiparty.android.popularmovies.models;
+package net.emojiparty.android.popularmovies.presenters;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import net.emojiparty.android.popularmovies.models.Trailer;
 
 public class TrailerPresenter {
   private Trailer trailer;

@@ -12,7 +12,7 @@ import net.emojiparty.android.popularmovies.BR;
 import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.databinding.FragmentDetailBinding;
 import net.emojiparty.android.popularmovies.models.Movie;
-import net.emojiparty.android.popularmovies.models.MoviePresenter;
+import net.emojiparty.android.popularmovies.presenters.MoviePresenter;
 
 import static net.emojiparty.android.popularmovies.activities.DetailMovieActivity.MOVIE_FOR_DETAIL;
 

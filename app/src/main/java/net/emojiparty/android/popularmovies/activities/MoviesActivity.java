@@ -22,8 +22,8 @@ import java.util.List;
 import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.adapters.DataBindingAdapter;
 import net.emojiparty.android.popularmovies.models.Movie;
-import net.emojiparty.android.popularmovies.models.MoviePresenter;
-import net.emojiparty.android.popularmovies.models.MoviesViewModel;
+import net.emojiparty.android.popularmovies.presenters.MoviePresenter;
+import net.emojiparty.android.popularmovies.viewmodels.MoviesViewModel;
 import net.emojiparty.android.popularmovies.network.MoviesResponse;
 import net.emojiparty.android.popularmovies.network.TheMovieDb;
 import net.emojiparty.android.popularmovies.repository.LocalDatabase;
@@ -49,13 +49,24 @@ public class MoviesActivity extends AppCompatActivity {
     loadingIndicator = findViewById(R.id.movies_loading);
     noFavorites = findViewById(R.id.no_movies);
     instantiateRecyclerView();
+    setupViewModel();
+    loadInitialMovies();
+  }
+
+  private void loadInitialMovies() {
+    // only need to do this the first time, on rotation there will probably be movies here
+    if (moviesViewModel.getMovies().getValue() == null || moviesViewModel.getMovies().getValue().size() == 0) {
+      loadPopularMovies();
+    }
+  }
+
+  private void setupViewModel() {
     moviesViewModel = ViewModelProviders.of(this).get(MoviesViewModel.class);
     moviesViewModel.getMovies().observe(this, new Observer<List<Movie>>() {
       @Override public void onChanged(@Nullable List<Movie> movies) {
         setMoviesInAdapter(movies);
       }
     });
-    loadPopularMovies();
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {

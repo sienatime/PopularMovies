@@ -18,7 +18,7 @@ import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.adapters.DataBindingAdapter;
 import net.emojiparty.android.popularmovies.models.Movie;
 import net.emojiparty.android.popularmovies.models.Trailer;
-import net.emojiparty.android.popularmovies.models.TrailerPresenter;
+import net.emojiparty.android.popularmovies.presenters.TrailerPresenter;
 import net.emojiparty.android.popularmovies.network.TheMovieDb;
 import net.emojiparty.android.popularmovies.network.VideosResponse;
 import retrofit2.Call;

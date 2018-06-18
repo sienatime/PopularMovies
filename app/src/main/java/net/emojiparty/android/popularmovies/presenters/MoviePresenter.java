@@ -1,4 +1,4 @@
-package net.emojiparty.android.popularmovies.models;
+package net.emojiparty.android.popularmovies.presenters;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.text.format.DateFormat;
 import java.text.DecimalFormat;
 import net.emojiparty.android.popularmovies.activities.DetailMovieActivity;
+import net.emojiparty.android.popularmovies.models.Movie;
 import net.emojiparty.android.popularmovies.repository.LocalDatabase;
 
 public class MoviePresenter {

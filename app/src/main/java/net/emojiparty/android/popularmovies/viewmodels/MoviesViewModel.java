@@ -1,10 +1,11 @@
-package net.emojiparty.android.popularmovies.models;
+package net.emojiparty.android.popularmovies.viewmodels;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import java.util.List;
+import net.emojiparty.android.popularmovies.models.Movie;
 
 public class MoviesViewModel extends AndroidViewModel {
   private MutableLiveData<List<Movie>> movies = new MutableLiveData<>();

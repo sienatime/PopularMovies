@@ -7,7 +7,7 @@
   <data>
     <variable
         name="presenter"
-        type="net.emojiparty.android.popularmovies.models.TrailerPresenter"
+        type="net.emojiparty.android.popularmovies.presenters.TrailerPresenter"
         />
   </data>
 
