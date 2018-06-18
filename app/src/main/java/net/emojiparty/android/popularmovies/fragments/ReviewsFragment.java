@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.util.ArrayList;
 import java.util.List;
 import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.adapters.DataBindingAdapter;
@@ -28,7 +27,6 @@ import static net.emojiparty.android.popularmovies.activities.DetailMovieActivit
 
 public class ReviewsFragment extends Fragment {
   private DataBindingAdapter reviewsAdapter;
-  private final List<Review> reviews = new ArrayList<>();
   private ProgressBar loadingIndicator;
   private TextView noReviews;
 
@@ -53,9 +51,8 @@ public class ReviewsFragment extends Fragment {
       public void onResponse(Call<ReviewsResponse> call, Response<ReviewsResponse> response) {
         stopLoading();
         if (response.isSuccessful()) {
-          reviews.clear();
-          reviews.addAll(response.body().getResults());
-          reviewsAdapter.notifyDataSetChanged();
+          List<Review> reviews = response.body().getResults();
+          reviewsAdapter.setItems(reviews);
           noReviews.setVisibility(reviews.size() == 0 ? View.VISIBLE : View.INVISIBLE);
         } else {
           showError(response.toString());
@@ -69,23 +66,11 @@ public class ReviewsFragment extends Fragment {
     });
   }
 
-  private void loadOneReview() {
-    reviews.clear();
-    Review review = new Review();
-    review.setAuthor("Screen-Space");
-    review.setContent("\"It is a bold undertaking, to readjust what is expected of the MCU/Avengers formula, and there are moments when the sheer scale and momentum match the narrative ambition...\"\n"
-        + "\n"
-        + "Read the full review here: http://screen-space.squarespace.com/reviews/2018/4/25/avengers-infinity-war.html");
-    review.setId("5adff809c3a3683daa00ad3d");
-    reviews.add(review);
-    reviewsAdapter.notifyDataSetChanged();
-  }
-
   private void instantiateRecyclerView(View view) {
     RecyclerView reviewsRecyclerView = view.findViewById(R.id.reviews_recycler_view);
     LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
     reviewsRecyclerView.setLayoutManager(layoutManager);
-    reviewsAdapter = new DataBindingAdapter(reviews, R.layout.list_item_review);
+    reviewsAdapter = new DataBindingAdapter(R.layout.list_item_review);
     reviewsRecyclerView.setAdapter(reviewsAdapter);
   }
 

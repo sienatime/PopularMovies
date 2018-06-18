@@ -7,16 +7,21 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import java.util.ArrayList;
 import java.util.List;
 import net.emojiparty.android.popularmovies.BR;
 
 public class DataBindingAdapter extends RecyclerView.Adapter {
-  private List<?> items;
+  private List<?> items = new ArrayList<>();
   private int layoutId;
 
-  public DataBindingAdapter(List<?> items, int layoutId) {
-    this.items = items;
+  public DataBindingAdapter(int layoutId) {
     this.layoutId = layoutId;
+  }
+
+  public void setItems(List<?> items) {
+    this.items = items;
+    notifyDataSetChanged();
   }
 
   @NonNull @Override

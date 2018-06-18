@@ -28,7 +28,6 @@ import retrofit2.Response;
 import static net.emojiparty.android.popularmovies.activities.DetailMovieActivity.MOVIE_FOR_DETAIL;
 
 public class TrailersFragment extends Fragment {
-  private List<TrailerPresenter> trailers = new ArrayList<>();
   private DataBindingAdapter listAdapter;
   private ProgressBar loadingIndicator;
   private TextView noTrailers;
@@ -40,7 +39,6 @@ public class TrailersFragment extends Fragment {
     loadingIndicator = view.findViewById(R.id.trailers_loading);
     noTrailers = view.findViewById(R.id.no_trailers);
     instantiateRecyclerView(view);
-    //loadOneTrailer();
     Movie movie = getArguments().getParcelable(MOVIE_FOR_DETAIL);
     loadTrailers(movie);
     return view;
@@ -54,9 +52,8 @@ public class TrailersFragment extends Fragment {
       public void onResponse(Call<VideosResponse> call, Response<VideosResponse> response) {
         stopLoading();
         if (response.isSuccessful()) {
-          trailers.clear();
-          trailers.addAll(mapTrailersToPresenters(response.body().getResults()));
-          listAdapter.notifyDataSetChanged();
+          List<TrailerPresenter> trailers = mapTrailersToPresenters(response.body().getResults());
+          listAdapter.setItems(trailers);
           noTrailers.setVisibility(trailers.size() == 0 ? View.VISIBLE : View.INVISIBLE);
         } else {
           stopLoading();
@@ -84,18 +81,8 @@ public class TrailersFragment extends Fragment {
     RecyclerView reviewsRecyclerView = view.findViewById(R.id.trailers_recycler_view);
     LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
     reviewsRecyclerView.setLayoutManager(layoutManager);
-    listAdapter = new DataBindingAdapter(trailers, R.layout.list_item_trailer);
+    listAdapter = new DataBindingAdapter(R.layout.list_item_trailer);
     reviewsRecyclerView.setAdapter(listAdapter);
-  }
-
-  private void loadOneTrailer() {
-    Trailer trailer = new Trailer();
-    trailer.setId("5a200baa925141033608f5f0");
-    trailer.setKey("6ZfuNTqbHE8");
-    trailer.setName("Official Trailer");
-    trailer.setSite("YouTube");
-    trailer.setType("Trailer");
-    trailers.add(new TrailerPresenter(trailer, getContext()));
   }
 
   private void showError(String message) {

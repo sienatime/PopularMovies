@@ -2,6 +2,7 @@ package net.emojiparty.android.popularmovies.activities;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,6 +23,7 @@ import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.adapters.DataBindingAdapter;
 import net.emojiparty.android.popularmovies.models.Movie;
 import net.emojiparty.android.popularmovies.models.MoviePresenter;
+import net.emojiparty.android.popularmovies.models.MoviesViewModel;
 import net.emojiparty.android.popularmovies.network.MoviesResponse;
 import net.emojiparty.android.popularmovies.network.TheMovieDb;
 import net.emojiparty.android.popularmovies.repository.LocalDatabase;
@@ -31,7 +33,6 @@ import retrofit2.Response;
 
 public class MoviesActivity extends AppCompatActivity {
 
-  private final List<MoviePresenter> movies = new ArrayList<>();
   private DataBindingAdapter moviesAdapter;
   private boolean requestInProgress = false;
   private TheMovieDb theMovieDb;
@@ -39,6 +40,7 @@ public class MoviesActivity extends AppCompatActivity {
   private TextView noFavorites;
   private LiveData<List<Movie>> liveMoviesFromDb;
   private Observer<List<Movie>> liveMoviesObserver;
+  private MoviesViewModel moviesViewModel;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -47,6 +49,12 @@ public class MoviesActivity extends AppCompatActivity {
     loadingIndicator = findViewById(R.id.movies_loading);
     noFavorites = findViewById(R.id.no_movies);
     instantiateRecyclerView();
+    moviesViewModel = ViewModelProviders.of(this).get(MoviesViewModel.class);
+    moviesViewModel.getMovies().observe(this, new Observer<List<Movie>>() {
+      @Override public void onChanged(@Nullable List<Movie> movies) {
+        setMoviesInAdapter(movies);
+      }
+    });
     loadPopularMovies();
   }
 
@@ -80,7 +88,7 @@ public class MoviesActivity extends AppCompatActivity {
     RecyclerView moviesRecyclerView = findViewById(R.id.movies_recycler_view);
     GridLayoutManager layoutManager = new GridLayoutManager(MoviesActivity.this, columnsForGridLayout());
     moviesRecyclerView.setLayoutManager(layoutManager);
-    moviesAdapter = new DataBindingAdapter(movies, R.layout.list_item_movie);
+    moviesAdapter = new DataBindingAdapter(R.layout.list_item_movie);
     moviesRecyclerView.setAdapter(moviesAdapter);
   }
 
@@ -103,7 +111,7 @@ public class MoviesActivity extends AppCompatActivity {
         stopLoading();
         if (response.isSuccessful()) {
           List<Movie> results = response.body().getResults();
-          setMoviesInAdapter(results);
+          moviesViewModel.setMovies(results);
         } else {
           showError(response.toString());
         }
@@ -116,10 +124,8 @@ public class MoviesActivity extends AppCompatActivity {
     };
   }
 
-  private void setMoviesInAdapter(List<Movie> results) {
-    movies.clear();
-    movies.addAll(mapMoviesToPresenters(results));
-    moviesAdapter.notifyDataSetChanged();
+  private void setMoviesInAdapter(List<Movie> movies) {
+    moviesAdapter.setItems(mapMoviesToPresenters(movies));
   }
 
   private List<MoviePresenter> mapMoviesToPresenters(List<Movie> movies) {
@@ -173,7 +179,7 @@ public class MoviesActivity extends AppCompatActivity {
     liveMoviesObserver = new Observer<List<Movie>>() {
       @Override public void onChanged(@Nullable List<Movie> favoriteMovies) {
         stopLoading();
-        setMoviesInAdapter(favoriteMovies);
+        moviesViewModel.setMovies(favoriteMovies);
         if (favoriteMovies.size() == 0) {
           noFavorites.setVisibility(View.VISIBLE);
         }
