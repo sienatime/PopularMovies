@@ -1,6 +1,5 @@
 package net.emojiparty.android.popularmovies.activities;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.res.Resources;
@@ -22,35 +21,50 @@ import java.util.List;
 import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.adapters.DataBindingAdapter;
 import net.emojiparty.android.popularmovies.models.Movie;
-import net.emojiparty.android.popularmovies.network.MoviesResponse;
-import net.emojiparty.android.popularmovies.network.TheMovieDb;
 import net.emojiparty.android.popularmovies.presenters.MoviePresenter;
-import net.emojiparty.android.popularmovies.repository.LocalDatabase;
+import net.emojiparty.android.popularmovies.repository.MovieRepository;
 import net.emojiparty.android.popularmovies.viewmodels.ListViewModel;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MoviesActivity extends AppCompatActivity {
 
   private DataBindingAdapter moviesAdapter;
   private boolean requestInProgress = false;
-  private TheMovieDb theMovieDb;
   private ProgressBar loadingIndicator;
   private TextView noFavorites;
-  private LiveData<List<Movie>> liveMoviesFromDb;
-  private Observer<List<Movie>> liveMoviesObserver;
   private ListViewModel moviesViewModel;
+  private MovieRepository movieRepository;
+  private MovieRepository.MoviesLoadedCallback moviesLoadedCallback;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    theMovieDb = new TheMovieDb();
     setContentView(R.layout.activity_movies);
     loadingIndicator = findViewById(R.id.movies_loading);
     noFavorites = findViewById(R.id.no_movies);
+    movieRepository = new MovieRepository(this, this);
     instantiateRecyclerView();
     setupViewModel();
     loadInitialMovies();
+  }
+
+  private MovieRepository.MoviesLoadedCallback getMoviesLoadedCallback() {
+    if (moviesLoadedCallback == null) {
+      moviesLoadedCallback = new MovieRepository.MoviesLoadedCallback() {
+        @Override public void onSuccess(List<Movie> movies) {
+          stopLoading();
+          moviesViewModel.setList(movies);
+          if (movieRepository.lastLoaded.equals(MovieRepository.FAVORITES) && movies.size() == 0) {
+            noFavorites.setVisibility(View.VISIBLE);
+          }
+        }
+
+        @Override public void onError(String message) {
+          stopLoading();
+          Toast.makeText(MoviesActivity.this, getString(R.string.error, message), Toast.LENGTH_LONG)
+              .show();
+        }
+      };
+    }
+    return moviesLoadedCallback;
   }
 
   private void loadInitialMovies() {
@@ -64,7 +78,7 @@ public class MoviesActivity extends AppCompatActivity {
     moviesViewModel = ViewModelProviders.of(this).get(ListViewModel.class);
     moviesViewModel.getList().observe(this, new Observer<List<?>>() {
       @Override public void onChanged(@Nullable List<?> movies) {
-        setMoviesInAdapter(((List<Movie>) movies));
+        moviesAdapter.setItems(mapMoviesToPresenters((List<Movie>) movies));
       }
     });
   }
@@ -109,36 +123,6 @@ public class MoviesActivity extends AppCompatActivity {
     return width / MINIMUM_COLUMN_WIDTH;
   }
 
-  private void showError(String message) {
-    Toast.makeText(MoviesActivity.this, getString(R.string.error, message), Toast.LENGTH_LONG)
-        .show();
-  }
-
-  // https://futurestud.io/tutorials/retrofit-synchronous-and-asynchronous-requests
-  private Callback<MoviesResponse> onMoviesLoaded() {
-    return new Callback<MoviesResponse>() {
-      @Override
-      public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-        stopLoading();
-        if (response.isSuccessful()) {
-          List<Movie> results = response.body().getResults();
-          moviesViewModel.setList(results);
-        } else {
-          showError(response.toString());
-        }
-      }
-
-      @Override public void onFailure(Call<MoviesResponse> call, Throwable t) {
-        stopLoading();
-        showError(t.toString());
-      }
-    };
-  }
-
-  private void setMoviesInAdapter(List<Movie> movies) {
-    moviesAdapter.setItems(mapMoviesToPresenters(movies));
-  }
-
   private List<MoviePresenter> mapMoviesToPresenters(List<Movie> movies) {
     List<MoviePresenter> presenters = new ArrayList<>();
     for (int i = 0; i < movies.size(); i++) {
@@ -159,43 +143,21 @@ public class MoviesActivity extends AppCompatActivity {
     loadingIndicator.setVisibility(View.INVISIBLE);
   }
 
-  private void removeFavoritesObserver() {
-    // otherwise, when a movie is favorited, the list will refresh with current favorites
-    // regardless of what sort was previously selected
-    if (liveMoviesFromDb != null) {
-      liveMoviesFromDb.removeObserver(liveMoviesObserver);
-    }
-  }
-
   private void loadTopRatedMovies() {
-    removeFavoritesObserver();
     startLoading();
     Toast.makeText(this, R.string.loading_top_movies, Toast.LENGTH_SHORT).show();
-    theMovieDb.loadTopRatedMovies().enqueue(onMoviesLoaded());
+    movieRepository.loadTopRatedMovies(getMoviesLoadedCallback());
   }
 
   private void loadPopularMovies() {
-    removeFavoritesObserver();
     startLoading();
     Toast.makeText(this, R.string.loading_popular_movies, Toast.LENGTH_SHORT).show();
-    theMovieDb.loadPopularMovies().enqueue(onMoviesLoaded());
+    movieRepository.loadPopularMovies(getMoviesLoadedCallback());
   }
 
   private void loadFavoriteMovies() {
     startLoading();
     Toast.makeText(this, R.string.loading_favorite_movies, Toast.LENGTH_SHORT).show();
-
-    LocalDatabase localDatabase = LocalDatabase.getInstance(MoviesActivity.this);
-    liveMoviesFromDb = localDatabase.movieDao().loadAllFavoriteMovies();
-    liveMoviesObserver = new Observer<List<Movie>>() {
-      @Override public void onChanged(@Nullable List<Movie> favoriteMovies) {
-        stopLoading();
-        moviesViewModel.setList(favoriteMovies);
-        if (favoriteMovies.size() == 0) {
-          noFavorites.setVisibility(View.VISIBLE);
-        }
-      }
-    };
-    liveMoviesFromDb.observe(MoviesActivity.this, liveMoviesObserver);
+    movieRepository.loadFavoriteMovies(getMoviesLoadedCallback());
   }
 }
