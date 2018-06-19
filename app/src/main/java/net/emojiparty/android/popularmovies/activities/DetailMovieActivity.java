@@ -1,9 +1,7 @@
 package net.emojiparty.android.popularmovies.activities;
 
-import android.arch.lifecycle.Observer;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -14,7 +12,7 @@ import net.emojiparty.android.popularmovies.adapters.DetailPagerAdapter;
 import net.emojiparty.android.popularmovies.databinding.ActivityDetailMovieBinding;
 import net.emojiparty.android.popularmovies.models.Movie;
 import net.emojiparty.android.popularmovies.presenters.MoviePresenter;
-import net.emojiparty.android.popularmovies.repository.LocalDatabase;
+import net.emojiparty.android.popularmovies.repository.MovieRepository;
 
 public class DetailMovieActivity extends AppCompatActivity {
   public static final String MOVIE_FOR_DETAIL = "MOVIE_FOR_DETAIL";
@@ -37,20 +35,8 @@ public class DetailMovieActivity extends AppCompatActivity {
 
   private void setupPresenter(Movie movie, ActivityDetailMovieBinding binding) {
     MoviePresenter moviePresenter = new MoviePresenter(movie, DetailMovieActivity.this);
-    syncWithLocalDatabase(moviePresenter);
+    new MovieRepository(this, this).syncFavoriteWithLocalDatabase(moviePresenter);
     binding.setVariable(BR.presenter, moviePresenter);
-  }
-
-  private void syncWithLocalDatabase(final MoviePresenter moviePresenter) {
-    LocalDatabase localDb = LocalDatabase.getInstance(DetailMovieActivity.this);
-    localDb.movieDao()
-        .loadMovieById(moviePresenter.id())
-        .observe(DetailMovieActivity.this, new Observer<Movie>() {
-          @Override public void onChanged(@Nullable Movie localMovie) {
-            boolean favorite = localMovie != null && localMovie.isFavorite();
-            moviePresenter.isFavorite().postValue(favorite);
-          }
-        });
   }
 
   private void configureActionBar(Movie movie) {

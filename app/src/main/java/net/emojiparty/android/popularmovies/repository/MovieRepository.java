@@ -2,13 +2,16 @@ package net.emojiparty.android.popularmovies.repository;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import java.util.List;
 import net.emojiparty.android.popularmovies.models.Movie;
 import net.emojiparty.android.popularmovies.network.MoviesResponse;
 import net.emojiparty.android.popularmovies.network.TheMovieDb;
+import net.emojiparty.android.popularmovies.presenters.MoviePresenter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -71,8 +74,29 @@ public class MovieRepository {
       @Override public void onChanged(@Nullable List<Movie> favoriteMovies) {
         moviesLoadedCallback.onSuccess(favoriteMovies);
       }
-    };;
+    };
     liveMoviesFromDb.observe(lifecycleOwner, liveMoviesObserver);
+  }
+
+  public void syncFavoriteWithLocalDatabase(final MoviePresenter moviePresenter) {
+    getLocalDatabase().movieDao()
+        .loadMovieById(moviePresenter.id())
+        .observe(lifecycleOwner, new Observer<Movie>() {
+          @Override public void onChanged(@Nullable Movie localMovie) {
+            boolean favorite = localMovie != null && localMovie.isFavorite();
+            moviePresenter.isFavorite().postValue(favorite);
+          }
+        });
+  }
+
+  public void toggleFavorite(final Movie movie, final MutableLiveData<Boolean> favorite) {
+    AsyncTask.execute(new Runnable() {
+      @Override public void run() {
+        boolean alreadyFavorited = favorite.getValue() != null && favorite.getValue();
+        movie.setFavorite(!alreadyFavorited);
+        getLocalDatabase().movieDao().insertFavoriteMovie(movie);
+      }
+    });
   }
 
   // https://futurestud.io/tutorials/retrofit-synchronous-and-asynchronous-requests
@@ -95,6 +119,7 @@ public class MovieRepository {
 
   public interface MoviesLoadedCallback {
     void onSuccess(List<Movie> movies);
+
     void onError(String message);
   }
 }

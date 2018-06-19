@@ -3,21 +3,22 @@ package net.emojiparty.android.popularmovies.presenters;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.text.format.DateFormat;
 import java.text.DecimalFormat;
 import net.emojiparty.android.popularmovies.activities.DetailMovieActivity;
 import net.emojiparty.android.popularmovies.models.Movie;
-import net.emojiparty.android.popularmovies.repository.LocalDatabase;
+import net.emojiparty.android.popularmovies.repository.MovieRepository;
 
 public class MoviePresenter {
   private Movie movie;
   private Context context;
   final private MutableLiveData<Boolean> favorite = new MutableLiveData<>();
+  private MovieRepository movieRepository;
 
   public MoviePresenter(Movie movie, Context context) {
     this.movie = movie;
     this.context = context;
+    this.movieRepository = new MovieRepository(context, null);
   }
 
   public int id() {
@@ -57,13 +58,6 @@ public class MoviePresenter {
   };
 
   public void onFavoriteFABClicked() {
-    AsyncTask.execute(new Runnable() {
-      @Override public void run() {
-        LocalDatabase localDb = LocalDatabase.getInstance(context);
-        boolean alreadyFavorited = favorite.getValue() != null && favorite.getValue();
-        movie.setFavorite(!alreadyFavorited); // for inserting to Room DB
-        localDb.movieDao().insertFavoriteMovie(movie);
-      }
-    });
+    movieRepository.toggleFavorite(movie, favorite);
   }
 }
