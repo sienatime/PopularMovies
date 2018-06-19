@@ -61,7 +61,6 @@ public class MoviePresenter {
       @Override public void run() {
         LocalDatabase localDb = LocalDatabase.getInstance(context);
         boolean alreadyFavorited = favorite.getValue() != null && favorite.getValue();
-        favorite.postValue(!alreadyFavorited); // for LiveData in the UI
         movie.setFavorite(!alreadyFavorited); // for inserting to Room DB
         localDb.movieDao().insertFavoriteMovie(movie);
       }

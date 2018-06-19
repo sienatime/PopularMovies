@@ -1,8 +1,9 @@
 package net.emojiparty.android.popularmovies.activities;
 
+import android.arch.lifecycle.Observer;
 import android.databinding.DataBindingUtil;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -20,7 +21,8 @@ public class DetailMovieActivity extends AppCompatActivity {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    ActivityDetailMovieBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_detail_movie);
+    ActivityDetailMovieBinding binding =
+        DataBindingUtil.setContentView(this, R.layout.activity_detail_movie);
     binding.setLifecycleOwner(DetailMovieActivity.this); // for LiveData usage inside Presenter
 
     final Movie movie = getIntent().getParcelableExtra(MOVIE_FOR_DETAIL);
@@ -40,14 +42,15 @@ public class DetailMovieActivity extends AppCompatActivity {
   }
 
   private void syncWithLocalDatabase(final MoviePresenter moviePresenter) {
-    AsyncTask.execute(new Runnable() {
-      @Override public void run() {
-        LocalDatabase localDb = LocalDatabase.getInstance(DetailMovieActivity.this);
-        Movie localMovie = localDb.movieDao().loadMovieById(moviePresenter.id());
-        boolean favorite = localMovie != null && localMovie.isFavorite();
-        moviePresenter.isFavorite().postValue(favorite);
-      }
-    });
+    LocalDatabase localDb = LocalDatabase.getInstance(DetailMovieActivity.this);
+    localDb.movieDao()
+        .loadMovieById(moviePresenter.id())
+        .observe(DetailMovieActivity.this, new Observer<Movie>() {
+          @Override public void onChanged(@Nullable Movie localMovie) {
+            boolean favorite = localMovie != null && localMovie.isFavorite();
+            moviePresenter.isFavorite().postValue(favorite);
+          }
+        });
   }
 
   private void configureActionBar(Movie movie) {
