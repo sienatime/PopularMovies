@@ -22,11 +22,11 @@ import java.util.List;
 import net.emojiparty.android.popularmovies.R;
 import net.emojiparty.android.popularmovies.adapters.DataBindingAdapter;
 import net.emojiparty.android.popularmovies.models.Movie;
-import net.emojiparty.android.popularmovies.presenters.MoviePresenter;
-import net.emojiparty.android.popularmovies.viewmodels.MoviesViewModel;
 import net.emojiparty.android.popularmovies.network.MoviesResponse;
 import net.emojiparty.android.popularmovies.network.TheMovieDb;
+import net.emojiparty.android.popularmovies.presenters.MoviePresenter;
 import net.emojiparty.android.popularmovies.repository.LocalDatabase;
+import net.emojiparty.android.popularmovies.viewmodels.ListViewModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,7 +40,7 @@ public class MoviesActivity extends AppCompatActivity {
   private TextView noFavorites;
   private LiveData<List<Movie>> liveMoviesFromDb;
   private Observer<List<Movie>> liveMoviesObserver;
-  private MoviesViewModel moviesViewModel;
+  private ListViewModel moviesViewModel;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -55,16 +55,16 @@ public class MoviesActivity extends AppCompatActivity {
 
   private void loadInitialMovies() {
     // only need to do this the first time, on rotation there will probably be movies here
-    if (moviesViewModel.getMovies().getValue() == null || moviesViewModel.getMovies().getValue().size() == 0) {
+    if (moviesViewModel.getList().getValue() == null || moviesViewModel.getList().getValue().size() == 0) {
       loadPopularMovies();
     }
   }
 
   private void setupViewModel() {
-    moviesViewModel = ViewModelProviders.of(this).get(MoviesViewModel.class);
-    moviesViewModel.getMovies().observe(this, new Observer<List<Movie>>() {
-      @Override public void onChanged(@Nullable List<Movie> movies) {
-        setMoviesInAdapter(movies);
+    moviesViewModel = ViewModelProviders.of(this).get(ListViewModel.class);
+    moviesViewModel.getList().observe(this, new Observer<List<?>>() {
+      @Override public void onChanged(@Nullable List<?> movies) {
+        setMoviesInAdapter(((List<Movie>) movies));
       }
     });
   }
@@ -122,7 +122,7 @@ public class MoviesActivity extends AppCompatActivity {
         stopLoading();
         if (response.isSuccessful()) {
           List<Movie> results = response.body().getResults();
-          moviesViewModel.setMovies(results);
+          moviesViewModel.setList(results);
         } else {
           showError(response.toString());
         }
@@ -190,7 +190,7 @@ public class MoviesActivity extends AppCompatActivity {
     liveMoviesObserver = new Observer<List<Movie>>() {
       @Override public void onChanged(@Nullable List<Movie> favoriteMovies) {
         stopLoading();
-        moviesViewModel.setMovies(favoriteMovies);
+        moviesViewModel.setList(favoriteMovies);
         if (favoriteMovies.size() == 0) {
           noFavorites.setVisibility(View.VISIBLE);
         }

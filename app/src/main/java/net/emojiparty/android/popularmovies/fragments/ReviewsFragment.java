@@ -1,5 +1,7 @@
 package net.emojiparty.android.popularmovies.fragments;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +21,7 @@ import net.emojiparty.android.popularmovies.models.Movie;
 import net.emojiparty.android.popularmovies.models.Review;
 import net.emojiparty.android.popularmovies.network.ReviewsResponse;
 import net.emojiparty.android.popularmovies.network.TheMovieDb;
+import net.emojiparty.android.popularmovies.viewmodels.ListViewModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -26,7 +29,8 @@ import retrofit2.Response;
 import static net.emojiparty.android.popularmovies.activities.DetailMovieActivity.MOVIE_FOR_DETAIL;
 
 public class ReviewsFragment extends Fragment {
-  private DataBindingAdapter reviewsAdapter;
+  private DataBindingAdapter listAdapter;
+  private ListViewModel listViewModel;
   private ProgressBar loadingIndicator;
   private TextView noReviews;
 
@@ -37,9 +41,25 @@ public class ReviewsFragment extends Fragment {
     loadingIndicator = view.findViewById(R.id.reviews_loading);
     noReviews = view.findViewById(R.id.no_reviews);
     instantiateRecyclerView(view);
-    Movie movie = getArguments().getParcelable(MOVIE_FOR_DETAIL);
-    loadReviews(movie);
+    setupViewModel();
+    loadInitialReviews();
     return view;
+  }
+
+  private void loadInitialReviews() {
+    if (listViewModel.getList().getValue() == null || listViewModel.getList().getValue().size() == 0) {
+      Movie movie = getArguments().getParcelable(MOVIE_FOR_DETAIL);
+      loadReviews(movie);
+    }
+  }
+
+  private void setupViewModel() {
+    listViewModel = ViewModelProviders.of(ReviewsFragment.this).get(ListViewModel.class);
+    listViewModel.getList().observe(ReviewsFragment.this, new Observer<List<?>>() {
+      @Override public void onChanged(@Nullable List<?> reviews) {
+        listAdapter.setItems(reviews);
+      }
+    });
   }
 
   private void loadReviews(Movie movie) {
@@ -51,7 +71,7 @@ public class ReviewsFragment extends Fragment {
         stopLoading();
         if (response.isSuccessful()) {
           List<Review> reviews = response.body().getResults();
-          reviewsAdapter.setItems(reviews);
+          listViewModel.setList(reviews);
           noReviews.setVisibility(reviews.size() == 0 ? View.VISIBLE : View.INVISIBLE);
         } else {
           showError(response.toString());
@@ -69,8 +89,8 @@ public class ReviewsFragment extends Fragment {
     RecyclerView reviewsRecyclerView = view.findViewById(R.id.reviews_recycler_view);
     LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
     reviewsRecyclerView.setLayoutManager(layoutManager);
-    reviewsAdapter = new DataBindingAdapter(R.layout.list_item_review);
-    reviewsRecyclerView.setAdapter(reviewsAdapter);
+    listAdapter = new DataBindingAdapter(R.layout.list_item_review);
+    reviewsRecyclerView.setAdapter(listAdapter);
   }
 
   private void showError(String message) {

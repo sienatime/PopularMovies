@@ -42,8 +42,6 @@ public class DetailMovieActivity extends AppCompatActivity {
   private void syncWithLocalDatabase(final MoviePresenter moviePresenter) {
     AsyncTask.execute(new Runnable() {
       @Override public void run() {
-        // seems like this should be done with a Repository, but I need the context so,
-        // use Dagger/dependency injection?
         LocalDatabase localDb = LocalDatabase.getInstance(DetailMovieActivity.this);
         Movie localMovie = localDb.movieDao().loadMovieById(moviePresenter.id());
         boolean favorite = localMovie != null && localMovie.isFavorite();

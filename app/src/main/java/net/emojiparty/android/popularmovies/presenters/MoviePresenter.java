@@ -60,15 +60,10 @@ public class MoviePresenter {
     AsyncTask.execute(new Runnable() {
       @Override public void run() {
         LocalDatabase localDb = LocalDatabase.getInstance(context);
-        if (favorite.getValue() != null && favorite.getValue()) {
-          favorite.postValue(false);
-          movie.setFavorite(false);
-          localDb.movieDao().updateMovie(movie);
-        } else {
-          favorite.postValue(true);
-          movie.setFavorite(true);
-          localDb.movieDao().insertFavoriteMovie(movie); // this could probably be an update or insert
-        }
+        boolean alreadyFavorited = favorite.getValue() != null && favorite.getValue();
+        favorite.postValue(!alreadyFavorited); // for LiveData in the UI
+        movie.setFavorite(!alreadyFavorited); // for inserting to Room DB
+        localDb.movieDao().insertFavoriteMovie(movie);
       }
     });
   }
